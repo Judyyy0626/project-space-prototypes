@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>价促场运营加工与判断逻辑</title>
+<style>
+:root{--bg:#f4f6fb;--panel:#fff;--line:#e5e8ef;--ink:#20242c;--sub:#6b7280;--brand:#4f46e5;--shadow:0 12px 30px rgba(31,35,48,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);padding:24px}
+.page{max-width:1180px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}
+h1{font-size:24px;line-height:1.2}
+.sub{color:var(--sub);font-size:13px;margin-top:6px}
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;font-size:12px;background:#f5f3ff;color:#6d28d9;font-weight:700}
+.doc-position{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+.doc-position h2{margin-bottom:8px}
+.doc-position p{margin:0}
+.flowchart-image{background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+.flowchart-image img{display:block;width:100%;height:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+h2{font-size:17px;margin-bottom:12px}
+p{font-size:13px;color:var(--sub);line-height:1.7}
+.flow{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.node{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px;box-shadow:0 8px 22px rgba(31,35,48,.04)}
+.node b{display:block;font-size:14px;margin-bottom:5px;color:#111827}
+.node span{font-size:12px;color:var(--sub);line-height:1.55}
+.node.start{background:#eef2ff;border-color:#c7d2fe}
+.node.decision{background:#fffbeb;border-color:#fde68a}
+.node.result{background:#f0fdf4;border-color:#bbf7d0}
+.node.alert{background:#fef2f2;border-color:#fecaca}
+.arrow{text-align:center;color:#9ca3af;font-size:18px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:12px}
+.rule{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:14px}
+.rule h3{font-size:14px;margin-bottom:8px;color:#111827}
+.rule ul{margin:0;padding-left:18px;color:var(--sub);font-size:12px;line-height:1.7}
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+.btn{border:0;border-radius:8px;padding:8px 12px;background:#4f46e5;color:#fff;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.btn.ghost{background:#fff;color:#374151;border:1px solid #d1d5db}
+.note{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px}
+.note ul{margin:8px 0 0;padding-left:18px;color:var(--sub);font-size:13px;line-height:1.8}
+@media(max-width:640px){body{padding:14px}.top{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <div>
+      <h1>价促场运营加工与判断逻辑</h1>
+      <div class="sub">来源：AI生成 · 最近更新：2026-10-12 17:30 · 维护人：AI助手</div>
+    </div>
+    <span class="badge">AI自动沉淀更新</span>
+  </div>
+
+  <div class="card doc-position">
+    <h2>文档定位</h2>
+    <p>本文档是价促场运营看板的唯一加工逻辑沉淀文档，用于统一说明取数、指标计算、机会品判断、CPS 机会判断、活动质量分级和异动提醒规则。后续所有看板加工逻辑变更都应更新到这里，避免逻辑分散。</p>
+  </div>
+
+  <div class="card">
+    <h2>简化流程图</h2>
+    <p>按业务过程说明数据如何变成看板上的机会品、CPS 机会品、活动质量和异动提醒。</p>
+    <div class="flowchart-image">
+      <img src="dashboard-logic-flowchart.png" alt="价促场运营看板简化加工流程图">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>关键判断规则</h2>
+    <div class="cols">
+      <div class="rule">
+        <h3>机会品</h3>
+        <ul>
+          <li>先看成交表现是否较好。</li>
+          <li>再看是否已报名价促场。</li>
+          <li>高成交且未报名的商品，会列为机会品。</li>
+          <li>通常按成交金额从高到低排序。</li>
+        </ul>
+      </div>
+      <div class="rule">
+        <h3>CPS 机会品</h3>
+        <ul>
+          <li>CPS 可以与其他价促场叠加。</li>
+          <li>商品表现好但还没报 CPS 时，会列为 CPS 机会品。</li>
+          <li>用于判断是否还有 CPS 增量空间。</li>
+        </ul>
+      </div>
+      <div class="rule">
+        <h3>秒杀质量</h3>
+        <ul>
+          <li>爆发系数 ≥ 2.0：优质。</li>
+          <li>爆发系数 ≥ 1.2：良好。</li>
+          <li>爆发系数 &lt; 1.2：低质。</li>
+        </ul>
+      </div>
+      <div class="rule">
+        <h3>超补质量</h3>
+        <ul>
+          <li>转化率 ≥ 10%：优质。</li>
+          <li>转化率 ≥ 5%：良好。</li>
+          <li>转化率 &lt; 5%：低质。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>阅读要点</h2>
+    <p>这份文档会随着看板规则更新而持续沉淀。用户不需要理解技术实现，只需要关注业务判断结果。</p>
+    <div class="note">
+      <ul>
+        <li>机会品：高成交但未报名价促场，可能是增量机会。</li>
+        <li>CPS 机会品：高成交但未报 CPS，可以评估佣金增量。</li>
+        <li>低质商品：占用资源但效果不足，建议复核或汰换。</li>
+        <li>异动提醒：变化明显，需要优先关注原因。</li>
+      </ul>
+    </div>
+    <div class="actions"><a class="btn ghost" href="../dashboard.html">返回价促场运营</a></div>
+  </div>
+</div>
+</body>
+</html>

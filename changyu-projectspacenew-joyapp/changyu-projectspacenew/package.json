@@ -1,0 +1,15 @@
+{
+  "name": "project-space-new",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node _ssa_guard.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "imagination": {
+    "businessStart": "node server.js"
+  },
+  "main": "_ssa_guard.js"
+}

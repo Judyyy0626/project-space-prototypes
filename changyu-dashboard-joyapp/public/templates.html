@@ -1,0 +1,1833 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI经营中心 · 项目列表</title>
+<link rel="stylesheet" href="common.css">
+<style>
+:root{
+  --bg:#f4f6fb; --panel:#fff; --line:#e5e8ef; --ink:#20242c; --sub:#6b7280;
+  --brand:#4f46e5; --brand-soft:#eef2ff; --accent:#10b981; --warn:#f59e0b;
+  --danger:#ef4444; --shadow:0 12px 30px rgba(31,35,48,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+/* 按压反馈（通用） */
+.btn:active,.btn-red:active,.btn-plain:active,.icon-btn:active,.create-choice-card:active,.tpl-reco-card:active,.filter-opt:active,.chip:active,.nav-child:active,.howto-card .btn:active{transform:scale(0.96)}
+
+.app{display:grid;grid-template-columns:240px minmax(0,1fr);grid-template-rows:56px minmax(0,1fr);height:100vh}
+header{grid-column:1/3;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:0 18px}
+.logo{font-weight:800;font-size:18px;color:var(--brand)}
+.search{flex:1;display:flex;align-items:center;gap:8px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:10px;padding:8px 12px;color:#6b7280}
+.search input{border:0;background:transparent;outline:none;width:100%;font-size:14px}
+.avatar{width:30px;height:30px;border-radius:50%;background:#e5e7eb;display:grid;place-items:center;font-size:12px;color:#4b5563}
+nav{background:#fff;border-right:1px solid var(--line);padding:16px 10px;overflow:auto;display:flex;flex-direction:column}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:#4b5563;font-size:14px;margin-bottom:6px;cursor:pointer}
+.nav-item.active{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.nav-item:hover{background:#f9fafb}
+.nav-child{display:flex;align-items:center;gap:8px;padding:8px 12px 8px 30px;border-radius:8px;color:#4b5563;font-size:14px;margin-bottom:4px;cursor:pointer}
+.nav-child.active{background:#eef2ff;color:#4f46e5;font-weight:700}
+.nav-child:hover{background:#f9fafb}
+.nav-title{font-size:12px;color:#9ca3af;margin:18px 8px 8px;font-weight:600}
+.brand-block{display:flex;align-items:center;gap:10px;padding:6px 8px 16px}
+.brand-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+.brand-title{font-weight:800;font-size:16px}
+.brand-sub{font-size:12px;color:#9ca3af;margin-top:2px}
+.nav-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+main{display:flex;flex-direction:column;min-width:0;overflow:auto;padding:20px 24px 32px}
+.breadcrumb{font-size:12px;color:#9ca3af;margin-bottom:12px}
+.page-title{font-size:22px;font-weight:800;margin-bottom:6px}
+.page-desc{font-size:13px;color:var(--sub);margin-bottom:16px}
+.chips{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+.chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;color:var(--sub)}
+.chip b{color:var(--ink)}
+section{margin-bottom:30px}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section-head h2{font-size:18px}
+.section-head span{font-size:12px;color:var(--sub)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px;transition:.2s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(31,35,48,.12);border-color:#c7d2fe}
+.card h3{font-size:16px;margin-bottom:6px}
+.meta{font-size:12px;color:var(--sub);line-height:1.6}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.badge{font-size:11px;padding:3px 7px;border-radius:999px;background:#f3f4f6;color:#4b5563}
+.badge.ok{background:#ecfdf5;color:#047857}
+.badge.info{background:#eff6ff;color:#1d4ed8}
+.badge.warn{background:#fff7ed;color:#c2410c}
+.badge.danger{background:#fee2e2;color:#b91c1c}
+.card-body{flex:1;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card-foot{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;margin-top:auto;padding-top:12px}
+.card-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:12px}
+.card-meta>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.card-meta span{font-size:12px;color:var(--sub)}
+.card-meta b{font-size:13px;font-weight:700;color:#111827;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.action-link{background:#fff;border:1px solid #e5e7eb;color:#4b5563;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer}
+.action-link:hover{border-color:#c7d2fe;background:var(--brand-soft);color:var(--brand)}
+.btn{border:0;border-radius:8px;padding:7px 12px;background:var(--brand);color:#fff;font-size:13px;cursor:pointer}
+.btn:hover{filter:brightness(.95)}
+.btn:disabled{opacity:.5;cursor:not-allowed;filter:none}
+.btn.ghost{background:#fff;color:var(--brand);border:1px solid #d1d5db}
+.btn.small{padding:5px 9px;font-size:12px}
+.btn.danger{background:var(--danger)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.drawer-mask{position:fixed;inset:0;background:rgba(15,23,42,.35);opacity:0;pointer-events:none;transition:.2s;z-index:30}
+.drawer-mask.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;width:min(540px,94vw);height:100%;background:#fff;box-shadow:-20px 0 60px rgba(15,23,42,.16);transform:translateX(100%);transition:.24s ease;z-index:40;display:flex;flex-direction:column}
+.drawer:not(.open){visibility:hidden;box-shadow:none}
+.drawer.open{transform:none;visibility:visible}
+.drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.drawer-head h3{font-size:18px}
+.drawer-head p{font-size:12px;color:var(--sub);margin-top:4px}
+.icon-btn{border:0;background:#f3f4f6;color:#4b5563;width:28px;height:28px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer}.icon-btn{position:relative}.icon-btn::after{content:"";position:absolute;inset:-6px}
+.drawer-body{flex:1;overflow:auto;padding:18px 20px}
+.drawer-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+.kv{display:grid;grid-template-columns:84px minmax(0,1fr);gap:6px 12px;font-size:13px;margin-bottom:16px}
+.kv span:first-child{color:var(--sub)}
+.block-title{font-size:14px;font-weight:700;margin:16px 0 8px}
+.list-item{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#374151;margin-bottom:6px;line-height:1.5}
+.list-item::before{content:"•";color:var(--brand)}
+.notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:14px}
+.notice.safe{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+.sync-section{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;background:#fafafa}
+.sync-section h4{font-size:14px;margin-bottom:8px}
+.check,.radio{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:#374151;margin-bottom:7px}
+.check input,.radio input{margin-top:4px}
+.small-note{font-size:12px;color:#6b7280;margin-top:6px}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:grid;place-items:center;z-index:70;opacity:0;pointer-events:none;transition:.2s}
+.overlay.show{opacity:1;pointer-events:auto}
+.modal{width:min(460px,92vw);background:#fff;border-radius:14px;padding:20px;box-shadow:0 24px 60px rgba(15,23,42,.25)}
+.modal h3{font-size:17px;margin-bottom:8px}
+.modal p{font-size:13px;color:#4b5563;line-height:1.6;margin-bottom:10px}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#111827;color:#fff;padding:9px 14px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:1200}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:900px){.app{grid-template-columns:1fr}.app nav{display:none}.app{grid-template-columns:minmax(0,1fr)}}
+
+.sample-head{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.sample-title{font-size:18px;font-weight:800}
+.sample-sub{font-size:12px;color:var(--sub);margin-top:2px}
+.sample-actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+.sample-body{display:grid;grid-template-columns:220px minmax(0,1fr) 320px;gap:14px;padding:14px;overflow:hidden}
+.sample-side,.sample-info{background:#fff;border-radius:14px;border:1px solid var(--line);padding:14px;overflow:auto}
+.sample-main{background:#fff;border-radius:14px;border:1px solid var(--line);padding:16px;overflow:auto}
+.sample-nav{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.sample-nav button{border:0;background:transparent;text-align:left;padding:9px 11px;border-radius:8px;font-size:13px;color:#4b5563;cursor:pointer}
+.sample-nav button.active{background:var(--brand-soft);color:var(--brand);font-weight:700}
+.sample-note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:14px}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.metric{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}
+.metric span{font-size:12px;color:var(--sub)}
+.metric b{display:block;font-size:20px;margin-top:4px}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px;margin:12px 0 16px}
+.bar{flex:1;background:linear-gradient(180deg,#a5b4fc,#6366f1);border-radius:6px 6px 0 0}
+.list-row{display:flex;justify-content:space-between;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;background:#fff}
+.list-row b{font-size:14px}
+.progress{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;min-width:120px}
+.progress i{display:block;height:100%;background:var(--brand)}
+.info-block{margin-bottom:14px}
+.info-block h4{font-size:14px;margin-bottom:6px}
+.info-block p,.info-block div{font-size:13px;color:#374151;line-height:1.6}
+@media(max-width:1100px){.sample-body{grid-template-columns:minmax(0,1fr)}.sample-side,.sample-info{display:none}}
+
+
+.upload-box{border:1px dashed #c7d2fe;background:#f8faff;border-radius:12px;padding:16px;text-align:center;color:#4b5563;cursor:pointer}
+.upload-box:hover{background:var(--brand-soft);border-color:var(--brand)}
+.upload-box b{display:block;margin-bottom:4px}
+.upload-box small{font-size:12px;color:#6b7280}
+.drawer-field{margin-top:12px}
+.drawer-field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.drawer-field input,.drawer-field select,.drawer-field textarea{width:100%;padding:9px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;background:#fff}
+.user-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:13px;background:#fff}
+.share-url{display:flex;gap:8px;align-items:center;margin-top:8px}
+.share-url input{flex:1;padding:8px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;background:#f9fafb;color:#374151}
+
+
+/* 新建项目入口 2 选 1 */
+.create-choice-overlay{position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:60;display:none;align-items:center;justify-content:center}
+.create-choice-overlay.show{display:flex}
+.create-choice-panel{background:#fff;border-radius:14px;padding:28px 30px;width:640px;box-shadow:0 24px 60px rgba(0,0,0,.18)}
+.create-choice-panel h3{margin:0 0 6px;font-size:18px}
+.create-choice-panel .sub{color:#6b7280;font-size:13px;margin-bottom:20px}
+.create-choice-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.create-choice-card{border:1.5px solid #e5e7eb;border-radius:12px;padding:18px 16px;cursor:pointer;transition:border-color .15s,box-shadow .15s,background .15s}
+.create-choice-card:hover{border-color:#4f46e5;box-shadow:0 6px 18px rgba(79,70,229,.12)}
+.create-choice-card .icon{font-size:26px;margin-bottom:10px}
+.create-choice-card b{font-size:15px;display:block;margin-bottom:6px}
+.create-choice-card p{font-size:12px;color:#6b7280;line-height:1.6;margin:0}
+
+/* 我的项目列表（表格） */
+.project-table-wrap{background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden}
+.project-table{width:100%;border-collapse:collapse;font-size:13px}
+.project-table th{background:#f9fafb;text-align:left;padding:10px 14px;color:#6b7280;font-weight:600;border-bottom:1px solid #e5e7eb;white-space:nowrap}
+.project-table td{padding:12px 14px;border-bottom:1px solid #f3f4f6;vertical-align:top}
+.project-table tr:last-child td{border-bottom:0}
+.project-table tr:hover td{background:#f8fafc}
+.project-name{font-weight:700;color:#111827;cursor:pointer}
+.project-name:hover{color:#4f46e5}
+.src-tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+.src-field{background:#eef2ff;color:#4f46e5}
+.src-new{background:#ecfdf5;color:#059669}
+.src-local{background:#fff7ed;color:#d97706}
+.row-actions{display:flex;gap:10px;white-space:nowrap}
+.row-actions a{color:#4f46e5;cursor:pointer;font-size:12px;text-decoration:none;border-radius:4px;padding:2px 4px;transition:background .15s}
+.row-actions a:hover{background:var(--brand-soft);text-decoration:none}
+.row-actions a.danger{color:#dc2626}
+.row-actions a.danger:hover{background:#fee2e2}
+
+/* 筛选条 */
+.filter-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.filter-group{display:flex;align-items:center;gap:8px;font-size:13px;color:#374151}
+.filter-group .flabel{color:#6b7280;font-weight:600}
+.filter-opt{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:#4b5563;padding:3px 10px;border-radius:999px;border:1px solid transparent;font-size:13px}
+.filter-opt:hover{background:#f3f4f6}
+.filter-opt.active{background:#eef2ff;color:#4f46e5;font-weight:600;border-color:#e0e7ff}
+
+/* 如何创建项目区 */
+.howto-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.howto-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .15s}
+.howto-card:hover{box-shadow:0 8px 24px rgba(17,24,39,.08)}
+.howto-cover{height:120px;background:linear-gradient(135deg,#eef2ff,#f5f3ff);display:grid;place-items:center;font-size:40px}
+.howto-cover.cover-red{background:linear-gradient(135deg,#fee2e2,#fecaca)}
+.howto-cover.cover-blue{background:linear-gradient(135deg,#dbeafe,#e0e7ff)}
+.howto-cover.cover-green{background:linear-gradient(135deg,#d1fae5,#ecfdf5)}
+.howto-body{padding:14px 16px;flex:1}
+.howto-body b{font-size:14px;display:block;margin-bottom:6px}
+.howto-body p{font-size:12px;color:#6b7280;line-height:1.6;margin:0}
+.howto-foot{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid #f3f4f6}
+.howto-meta{display:flex;align-items:center;gap:6px;font-size:12px;color:#6b7280}
+.howto-actions{display:flex;gap:8px}
+
+/* 部署抽屉里的 CLI 占位 */
+.cli-block{background:#111827;color:#e5e7eb;border-radius:10px;padding:14px 16px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.7;position:relative;margin-top:8px}
+.cli-block .copy-btn{position:absolute;right:10px;top:10px;background:#374151;color:#fff;border:0;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer}
+.cli-block .copy-btn:hover{background:#4b5563}
+.cli-comment{color:#9ca3af}
+
+/* 类型筛选 radio 圆点 */
+.filter-opt input[type=radio]{display:none}
+.filter-opt .dot{width:14px;height:14px;border-radius:50%;border:1.5px solid #d1d5db;display:inline-block;position:relative;transition:border-color .15s}
+.filter-opt:hover .dot{border-color:#a5b4fc}
+.filter-opt.active .dot{border-color:#4f46e5}
+.filter-opt.active .dot::after{content:"";position:absolute;inset:3px;border-radius:50%;background:#4f46e5;transition:transform .15s,opacity .15s}
+
+
+/* 视图切换 */
+.view-toggle{display:inline-flex;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden}
+.view-toggle button{border:0;background:#fff;padding:6px 14px;font-size:13px;color:#4b5563;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.view-toggle button.active{background:#eef2ff;color:#4f46e5;font-weight:600}
+
+/* 卡片网格 */
+.project-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.project-card-item{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:box-shadow .15s,transform .15s;cursor:pointer}
+.project-card-item:hover{box-shadow:0 8px 24px rgba(17,24,39,.08);transform:translateY(-1px)}
+.project-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.project-card-head .name{font-weight:700;font-size:14px;color:#111827;line-height:1.4}
+.project-card-desc{font-size:12px;color:#6b7280;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.project-card-meta{display:flex;flex-direction:column;gap:4px;font-size:12px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:10px}
+.project-card-meta .row{display:flex;justify-content:space-between;gap:8px}
+.project-card-meta .row b{color:#374151;font-weight:500}
+.project-card-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f3f4f6;padding-top:10px}
+.project-card-foot .actions{display:flex;gap:10px}
+.project-card-foot .actions a{color:#4f46e5;font-size:12px;cursor:pointer;text-decoration:none;border-radius:4px;padding:2px 4px;transition:background .15s}
+.project-card-foot .actions a:hover{background:var(--brand-soft)}
+.project-card-foot .actions a.danger{color:#dc2626}
+.project-card-foot .actions a.danger:hover{background:#fee2e2}
+
+
+/* 新建项目弹窗（图一/图二） */
+.newproj-overlay{position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:70;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 20px}
+.newproj-overlay.show{display:flex}
+.newproj-panel{background:#fff;border-radius:14px;width:760px;max-width:96vw;box-shadow:0 24px 60px rgba(0,0,0,.18);position:relative;padding:26px 30px 24px;max-height:calc(100vh - 80px);overflow-y:auto}
+.newproj-close{position:absolute;right:18px;top:16px;border:0;background:transparent;font-size:20px;color:#6b7280;cursor:pointer}
+.newproj-title{font-size:18px;font-weight:800;margin:0 0 6px}
+.newproj-sub{font-size:13px;color:#374151;margin-bottom:4px}
+.newproj-warn{color:#dc2626;font-size:13px}
+.newproj-warn b{color:#dc2626}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;margin-top:16px}
+.form-item{display:flex;align-items:center;gap:10px}
+.form-item label{font-size:13px;color:#111827;white-space:nowrap}
+.form-item label.req::before{content:"*";color:#dc2626;margin-right:2px}
+.form-item input{flex:1;height:36px;border:1px solid #d1d5db;border-radius:8px;padding:0 10px;font-size:13px;outline:none}
+.form-item input:focus{border-color:#4f46e5}
+.date-range{display:flex;flex:1;align-items:center;border:1px solid #d1d5db;border-radius:8px;overflow:hidden}
+.date-range input{border:0;height:34px;flex:1;min-width:0;padding:0 8px;font-size:12px;outline:none}
+.date-range .sep{color:#d1d5db}
+.tpl-reco-title{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;margin:26px 0 12px}
+.tpl-reco-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tpl-reco-card{border:1.5px solid #e5e7eb;border-radius:12px;padding:20px 10px;text-align:center;cursor:pointer;transition:border-color .15s,box-shadow .15s,background .15s}
+.tpl-reco-card:hover{border-color:#4f46e5;box-shadow:0 4px 14px rgba(79,70,229,.12)}
+.tpl-reco-card.selected{border-color:#4f46e5;background:#eef2ff}
+.tpl-reco-card .icon{font-size:26px;margin-bottom:8px}
+.tpl-reco-card b{font-size:13px;font-weight:600}
+
+.tpl-excel-card{border-style:dashed;background:#f8faff}
+.tpl-excel-card:hover{background:var(--brand-soft)}
+.tpl-excel-card b{display:block}
+.tpl-excel-card small{display:block;margin-top:4px;color:#6b7280;font-size:11px;line-height:1.4}
+.np-excel-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0 14px;flex-wrap:wrap}
+.np-excel-link{color:#4f46e5;font-size:12px;text-decoration:none;border-bottom:1px dashed #c7d2fe;padding-bottom:1px}
+.np-excel-link:hover{color:#4338ca;border-color:#4338ca}
+.np-excel-result{display:none;margin-top:2px;padding:12px 14px;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:10px;font-size:12px;color:#166534}
+.np-excel-result.show{display:block}
+.np-excel-result.err{border-color:#fecaca;background:#fef2f2;color:#b91c1c}
+.np-excel-result .title{display:flex;align-items:center;gap:6px;font-weight:700;margin-bottom:6px}
+.np-excel-result .meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px}
+.np-excel-result .meta span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.np-field-updated{border-color:#f59e0b !important;background:#fffbeb !important;box-shadow:0 0 0 2px rgba(245,158,11,.12)}
+input.np-field-updated::placeholder{color:#9a3412}
+
+.manual-link{margin-top:18px;font-size:13px;color:#2563eb;cursor:pointer}
+.manual-link:hover{text-decoration:underline}
+.newproj-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:26px}
+
+/* 阶段节点设置 */
+.stage-section{margin-top:24px}
+.stage-section h4{font-size:14px;margin:0 0 12px}
+.stage-block{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:14px;position:relative}
+.stage-row{display:grid;grid-template-columns:1fr 1.2fr;gap:12px 24px}
+.node-row{display:grid;grid-template-columns:1fr 1.2fr 60px;gap:12px 24px;margin-top:12px;align-items:center}
+.stage-row .form-item label,.node-row .form-item label{min-width:74px;text-align:right}
+.stage-ctrl{position:absolute;right:-14px;top:14px;display:flex;flex-direction:column;gap:6px}
+.stage-ctrl button{width:26px;height:26px;border-radius:50%;border:0;background:#4f46e5;color:#fff;font-size:15px;cursor:pointer;display:grid;place-items:center;line-height:1}
+.stage-ctrl button.minus{background:#e5e7eb;color:#6b7280}
+.stage-ctrl button:hover{opacity:.85}
+
+/* 选择成员弹窗（图三） */
+.member-overlay{position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:80;display:none;align-items:center;justify-content:center}
+.member-overlay.show{display:flex}
+.member-panel{background:#fff;border-radius:14px;width:860px;max-width:96vw;height:640px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.member-close{position:absolute;right:18px;top:14px;border:0;background:transparent;font-size:22px;color:#6b7280;cursor:pointer;z-index:2}
+.member-title{font-size:17px;font-weight:800;padding:18px 24px 12px}
+.member-body{flex:1;display:flex;border-top:1px solid #f3f4f6;min-height:0}
+.member-left{flex:1.15;display:flex;flex-direction:column;border-right:1px solid #f3f4f6;min-width:0}
+.member-search{padding:14px 20px 0}
+.member-search input{width:100%;height:36px;border:1px solid #d1d5db;border-radius:8px;padding:0 12px;font-size:13px;outline:none}
+.member-tabs{display:flex;gap:28px;padding:12px 24px 0;border-bottom:1px solid #f3f4f6}
+.member-tabs button{border:0;background:transparent;font-size:14px;color:#6b7280;padding:8px 2px;cursor:pointer;border-bottom:2px solid transparent}
+.member-tabs button.active{color:#111827;font-weight:700;border-bottom-color:#e1251b}
+.member-list{flex:1;overflow-y:auto;padding:8px 12px}
+.member-item{display:flex;align-items:center;gap:12px;padding:10px 10px;border-radius:10px;cursor:pointer}
+.member-item:hover{background:#f8fafc}
+.member-item input[type=checkbox]{width:16px;height:16px;accent-color:#e1251b}
+.member-item .avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0}
+.member-item .info b{font-size:14px;color:#111827;display:block}
+.member-item .info span{font-size:12px;color:#9ca3af}
+.member-right{flex:1;display:flex;flex-direction:column;padding:18px 24px;min-width:0}
+.member-count{font-size:13px;color:#6b7280;margin-bottom:12px}
+.member-count b{color:#e1251b}
+.selected-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.selected-item{display:flex;align-items:center;gap:12px}
+.selected-item .avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0}
+.selected-item b{font-size:14px;flex:1}
+.selected-item .perm{font-size:13px;color:#374151;cursor:pointer;display:flex;align-items:center;gap:4px}
+.selected-item .remove{border:0;background:transparent;color:#9ca3af;font-size:16px;cursor:pointer}
+.notify-check{display:flex;align-items:center;gap:8px;font-size:14px;margin-top:14px}
+.notify-check input{width:16px;height:16px;accent-color:#e1251b}
+.notify-msg{margin-top:10px}
+.notify-msg textarea{width:100%;height:74px;border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font-size:13px;resize:none;outline:none}
+.member-foot{display:flex;justify-content:flex-end;gap:12px;padding:14px 24px;border-top:1px solid #f3f4f6}
+.btn-red{background:#e1251b;color:#fff;border:0;border-radius:8px;padding:9px 22px;font-size:14px;cursor:pointer}
+.btn-red:hover{background:#c81e14}
+.btn-plain{background:#fff;color:#374151;border:1px solid #d1d5db;border-radius:8px;padding:9px 22px;font-size:14px;cursor:pointer}
+
+/* 上传部署抽屉 */
+.drop-zone{border:1.5px dashed #c7d2fe;background:#f8faff;border-radius:12px;padding:22px 16px;text-align:center;color:#4b5563;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:6px}
+.drop-zone:hover{background:var(--brand-soft);border-color:var(--brand)}
+.drop-zone b{font-size:14px;color:#111827}
+.drop-zone span{font-size:12px;color:#6b7280}
+.field{margin-top:12px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#111827}
+.field input,.field select{width:100%;padding:9px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;background:#fff;outline:none}
+.field input:focus,.field select:focus{border-color:var(--brand)}
+.drawer-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+
+/* 成员选择 · 部门分组 */
+.member-group{margin-bottom:8px}
+.member-group-head{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:#f9fafb;font-size:13px;font-weight:600;color:#374151}
+.member-group-head .cnt{margin-left:auto;font-size:12px;color:#9ca3af;font-weight:400}
+
+/* 自定义确认/输入弹窗 */
+.overlay-top{z-index:85}
+
+/* 空状态 */
+.empty-state{grid-column:1/-1;text-align:center;color:#9ca3af;padding:40px 0;font-size:13px}
+.empty-state .big{font-size:30px;margin-bottom:8px}
+
+/* 阶段节点按钮 */
+.stage-mini{width:24px;height:24px;border-radius:50%;border:0;cursor:pointer;font-size:14px;line-height:1;display:grid;place-items:center}
+.stage-mini.minus{background:#e5e7eb;color:#6b7280}
+.stage-mini.minus:hover{background:#d1d5db}
+.stage-mini.plus{background:var(--brand);color:#fff}
+.stage-mini.plus:hover{opacity:.85}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="logo">AI经营中心</div>
+    <div class="search">
+      <span aria-hidden="true">⌕</span>
+      <input id="searchInput" placeholder="搜索项目 / 模板" aria-label="搜索项目和模板">
+    </div>
+    <div class="avatar">采</div>
+  </header>
+
+  <nav>
+    <div class="brand-block">
+      <div class="brand-icon">AI</div>
+      <div>
+        <div class="brand-title">AI经营中心</div>
+        <div class="brand-sub">AI Space</div>
+      </div>
+    </div>
+    <div class="nav-item">✏️ 新对话</div>
+    <div class="nav-item">🗂 项目空间</div>
+    <a class="nav-child active" href="templates.html" style="text-decoration:none">• 项目列表</a>
+    <a class="nav-child" href="index.html" style="text-decoration:none">• 新品项目</a>
+    <a class="nav-child" href="dashboard.html" style="text-decoration:none">• 价促场运营</a>
+    <div class="nav-item">🧠 AI作战室</div>
+    <div class="nav-item">🛠 AI技能库</div>
+    <div class="nav-item">🗂 AI档案库</div>
+    <div class="nav-bottom">
+      <div class="nav-item">❓ 帮助中心</div>
+      <div class="nav-item">⚙️ 设置</div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="breadcrumb">项目空间 / <strong>项目列表</strong></div>
+    <h1 class="page-title">项目列表</h1>
+    <p class="page-desc">上半部分管理我的项目，下半部分从平台模板复制独立副本。模板升级后，副本默认保持独立，由用户选择是否同步。</p>
+
+    <section>
+      <div class="section-head">
+        <h2>我的项目</h2>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="color:#9ca3af;font-size:12px">项目副本完全独立，任务、动态和成员变更互不影响</span>
+          <div class="view-toggle">
+            <button id="viewCardBtn" class="active" onclick="setProjectView('card')">▦ 卡片</button>
+            <button id="viewListBtn" onclick="setProjectView('list')">☰ 列表</button>
+          </div>
+          <button class="btn" onclick="openCreateChoice()">＋ 新建项目</button>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span class="flabel">来源</span>
+          <span class="filter-opt active" data-source="all" onclick="setProjectSourceFilter('all',this)"><i class="dot"></i>全部</span>
+          <span class="filter-opt" data-source="mine" onclick="setProjectSourceFilter('mine',this)"><i class="dot"></i>我创建的</span>
+          <span class="filter-opt" data-source="shared" onclick="setProjectSourceFilter('shared',this)"><i class="dot"></i>我收到的</span>
+        </div>
+        <div class="filter-group">
+          <span class="flabel">类型</span>
+          <span class="filter-opt active" data-type="all" onclick="setProjectTypeFilter('all',this)"><i class="dot"></i>全部</span>
+          <span class="filter-opt" data-type="field" onclick="setProjectTypeFilter('field',this)"><i class="dot"></i>价促场</span>
+          <span class="filter-opt" data-type="new" onclick="setProjectTypeFilter('new',this)"><i class="dot"></i>新品</span>
+          <span class="filter-opt" data-type="local" onclick="setProjectTypeFilter('local',this)"><i class="dot"></i>本地</span>
+        </div>
+      </div>
+
+      <div id="projectListView" style="display:none"><div class="project-table-wrap">
+        <table class="project-table">
+          <thead>
+            <tr>
+              <th>项目名称</th>
+              <th>描述</th>
+              <th>类型</th>
+              <th>创建人</th>
+              <th>创建时间</th>
+              <th>最近修改</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="projectTableBody"></tbody>
+        </table>
+      </div></div>
+      <div id="projectCardView" class="project-grid"></div>
+    </section>
+
+    <section style="margin-top:36px">
+      <div class="section-head">
+        <h2>如何创建项目？</h2>
+        <span>从平台模板快速开始，或把本地 Agent 产物部署成项目分享给同事</span>
+      </div>
+      <div class="howto-grid" id="howtoGrid"></div>
+    </section>
+  </main>
+</div>
+
+<div class="drawer-mask" id="drawerMask" onclick="closeDrawers()"></div>
+
+<div class="create-choice-overlay" id="createChoiceOverlay" role="dialog" aria-modal="true" aria-labelledby="createChoiceTitle" onclick="if(event.target===this)closeCreateChoice()">
+  <div class="create-choice-panel">
+    <h3 id="createChoiceTitle">新建项目</h3>
+    <div class="sub">选择一种创建方式，创建后可随时在「我的项目」里管理</div>
+    <div class="create-choice-cards">
+      <div class="create-choice-card" onclick="closeCreateChoice();openTemplatePicker()">
+        <div class="icon">🧩</div>
+        <b>使用平台模板</b>
+        <p>从平台预置模板复制一个独立副本，模板升级后副本保持独立，由你选择是否同步。</p>
+      </div>
+      <div class="create-choice-card" onclick="closeCreateChoice();openUploadDrawer()">
+        <div class="icon">📦</div>
+        <b>部署本地产物</b>
+        <p>上传本地 Agent 生成的 zip 包，或在本地安装 CLI 一键部署。部署后可分享给指定人员查看。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 模板选择弹层 -->
+<div class="create-choice-overlay" id="templatePickerOverlay" onclick="if(event.target===this)closeTemplatePicker()">
+  <div class="create-choice-panel">
+    <h3>使用平台模板</h3>
+    <div class="sub">点击卡片查看详情；使用模板后会创建独立副本并直接进入项目</div>
+    <div class="create-choice-cards" id="templatePickerGrid"></div>
+  </div>
+</div>
+
+
+
+
+
+<aside class="drawer" id="createDrawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <h3>创建我的项目</h3>
+      <p id="createMeta"></p>
+    </div>
+    <button class="icon-btn" onclick="closeDrawers()">×</button>
+  </div>
+  <div class="drawer-body">
+    <label class="block-title" for="createName">项目名称</label>
+    <input id="createName" onkeydown="if(event.key==='Enter')createProject()" style="width:100%;padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;margin-bottom:10px">
+    <div class="small-note">默认命名为“模板名 + 日期”；同一天出现同名副本时可自动追加序号。</div>
+
+    <div class="drawer-field">
+      <label for="createDesc">项目描述</label>
+      <textarea id="createDesc" maxlength="200" placeholder="选填，最多 200 字，用于说明项目目标或范围"></textarea>
+      <div class="small-note">选填，最多 200 字。</div>
+    </div>
+
+    <div class="small-note">当前版本的项目默认仅创建人可见，后续如需共享再单独扩展。</div>
+
+    <div class="block-title">将复制</div>
+    <div id="copyList"></div>
+
+    <div class="notice safe">创建副本不复制权限和数据。用户进入项目后，将使用自己的权限访问数据源、知识库和技能。</div>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn ghost" onclick="closeDrawers()">取消</button>
+    <button class="btn" onclick="createProject()">创建项目</button>
+  </div>
+</aside>
+
+<aside class="drawer" id="syncDrawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <h3>模板更新同步检查</h3>
+      <p>价促场运营 v1.0 → v1.2 · 项目：价促场运营0918</p>
+    </div>
+    <button class="icon-btn" onclick="closeDrawers()">×</button>
+  </div>
+  <div class="drawer-body">
+    <div class="notice">检测到 A1 已做较大自定义。默认保留当前页面结构和已修改内容，不会自动覆盖。</div>
+
+    <div class="sync-section">
+      <h4>可自动同步</h4>
+      <label class="check"><input type="checkbox" class="sync-item" checked data-label="新增机会品说明 SOP">新增机会品说明 SOP</label>
+      <label class="check"><input type="checkbox" class="sync-item" checked data-label="更新看板指标口径">更新看板指标口径</label>
+    </div>
+
+    <div class="sync-section">
+      <h4>保留你的修改</h4>
+      <div class="list-item">任务清单结构：保留 A1 当前结构</div>
+      <div class="list-item">AI 助手提示词：保留当前版本</div>
+    </div>
+
+    <div class="sync-section">
+      <h4>冲突项</h4>
+      <div class="list-item">异常提醒规则</div>
+      <label class="radio"><input type="radio" name="conflictRule" value="keep" checked>保留我的版本</label>
+      <label class="radio"><input type="radio" name="conflictRule" value="template">使用模板版本</label>
+      <label class="radio"><input type="radio" name="conflictRule" value="skip">暂不同步</label>
+    </div>
+
+    <div class="sync-section">
+      <h4>模板新增能力</h4>
+      <label class="check"><input type="checkbox" class="new-module" data-label="秒杀场域异常模块">秒杀场域异常模块</label>
+      <label class="check"><input type="checkbox" class="new-module" data-label="场域转化漏斗模块">场域转化漏斗模块</label>
+      <div class="small-note">这些是“可添加能力”，不会自动插入当前页面。</div>
+    </div>
+
+    <div class="sync-section" style="border-color:#fecaca;background:#fff">
+      <h4>高风险操作</h4>
+      <div class="small-note">采用新版模板结构会覆盖 A1 的页面布局和部分页面逻辑。</div>
+      <label class="check" style="margin-top:8px"><input type="checkbox" id="riskAccept">我确认采用新版结构，并生成同步前快照</label>
+    </div>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn ghost" onclick="closeDrawers()">取消</button>
+    <button class="btn" onclick="applySyncSelected()">同步已选项</button>
+    <button class="btn danger" id="riskSyncBtn" onclick="openRiskModal()">采用新版结构</button>
+  </div>
+</aside>
+
+
+<aside class="drawer" id="uploadDrawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <h3>部署本地产物</h3>
+      <p>上传本地 Agent 生成的资源包，或用 CLI 从本地一键部署。部署后可分享给指定人员查看。</p>
+    </div>
+    <button class="icon-btn" onclick="closeDrawers()">×</button>
+  </div>
+  <div class="drawer-body">
+
+  <div style="display:flex;gap:0;border-bottom:1px solid #e5e7eb;margin:12px 0 16px">
+    <button id="upTabZip" class="btn ghost small" style="border-radius:8px 8px 0 0;border-bottom:2px solid #4f46e5;color:#4f46e5" onclick="switchUploadTab('zip')">上传 zip 包</button>
+    <button id="upTabCli" class="btn ghost small" style="border-radius:8px 8px 0 0" onclick="switchUploadTab('cli')">CLI 部署</button>
+  </div>
+
+  <div id="upPanelZip">
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('artifactFile').click()">
+      <b>点击选择或拖拽 zip 到此处</b>
+      <span>仅支持 zip 包，需包含 index.html 入口，单包 ≤ 50MB</span>
+      <input type="file" id="artifactFile" accept=".zip" style="display:none">
+    </div>
+    <div class="small-note" id="artifactFileName" style="margin-top:8px">未选择文件</div>
+    <div class="field"><label>产物名称</label><input id="artifactName" placeholder="例如：营销场域看板0923"></div>
+    <div class="field"><label>来源说明</label><input id="artifactSource" value="本地 Agent 生成"></div>
+    <div class="field">
+      <label>可见范围</label>
+      <select id="artifactVisibility">
+        <option value="私有">仅自己可见</option>
+        <option value="指定人员">指定人员</option>
+        <option value="指定团队">部门可见</option>
+      </select>
+    </div>
+    <div class="field"><label>分享有效期（天）</label><input id="artifactDays" type="number" min="1" value="7"></div>
+    <div class="notice safe">部署后产物默认私有；分享链接做登录校验，页面内数据接口仍按访问人自身权限校验。</div>
+    <div class="drawer-actions">
+      <button class="btn ghost" onclick="closeDrawers()">取消</button>
+      <button class="btn" onclick="deployArtifact()">开始部署</button>
+    </div>
+  </div>
+
+  <div id="upPanelCli" style="display:none">
+    <p style="font-size:13px;color:#374151;line-height:1.7;margin-top:0">在本地 Agent 环境安装 CLI 后，一行命令把本地产物发布到平台：</p>
+    <div class="cli-block">
+      <button class="copy-btn" onclick="copyCliCmd()">复制</button>
+      <span class="cli-comment"># 1. 安装 CLI（示例占位）</span><br>
+      npm i -g @jd/ai-space-cli<br><br>
+      <span class="cli-comment"># 2. 登录</span><br>
+      ai-space login<br><br>
+      <span class="cli-comment"># 3. 在项目产物目录执行部署</span><br>
+      ai-space deploy ./dist --name "营销场域看板0923"
+    </div>
+    <div class="notice safe" style="margin-top:14px">CLI 部署完成后，产物会自动出现在「我的项目」列表，类型为「本地」。</div>
+    <div class="drawer-actions">
+      <button class="btn ghost" onclick="closeDrawers()">关闭</button>
+    </div>
+  </div>
+  </div>
+</aside>
+<aside class="drawer" id="permissionDrawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <h3>管理可见范围</h3>
+      <p id="permissionArtifactName"></p>
+    </div>
+    <button class="icon-btn" onclick="closeDrawers()">×</button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-field">
+      <label>可见范围</label>
+      <div class="radio"><input type="radio" name="artifactScope" value="私有"><span>私有 · 仅自己可见</span></div>
+      <div class="radio"><input type="radio" name="artifactScope" value="指定人员"><span>指定人员可见</span></div>
+      <div class="radio"><input type="radio" name="artifactScope" value="指定团队"><span>指定团队可见</span></div>
+    </div>
+
+    <div class="drawer-field">
+      <label>添加可见人员</label>
+      <div style="display:flex;gap:8px">
+        <input id="artifactUser" placeholder="输入姓名或工号">
+        <button class="btn ghost" onclick="addArtifactUser()">添加</button>
+      </div>
+    </div>
+
+    <div id="artifactUserList"></div>
+
+    <div class="drawer-field">
+      <label for="permissionDays">链接有效期（天）</label>
+      <input id="permissionDays" type="number" min="1">
+    </div>
+
+    <label class="check" style="margin-top:10px"><input type="checkbox" id="allowRequest">允许未授权用户申请访问</label>
+
+    <div class="share-url">
+      <input id="shareUrl" readonly>
+      <button class="btn ghost small" onclick="copyShareLink()">复制</button>
+    </div>
+
+    <div class="notice safe" style="margin-top:14px">关闭分享后，已有链接将立即失效；页面内的数据接口仍按访问人自身权限校验。</div>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn ghost" onclick="closeDrawers()">取消</button>
+    <button class="btn" onclick="saveArtifactPermission()">保存</button>
+  </div>
+</aside>
+
+<div class="overlay" id="riskModal">
+  <div class="modal">
+    <h3>确认采用新版模板结构</h3>
+    <p>该操作会覆盖 A1 的页面布局和部分页面逻辑。系统会先生成同步前快照，同步后可回滚。</p>
+    <div class="small-note">同步前快照：价促场运营0918 · 09-23 11:20</div>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeRiskModal()">取消</button>
+      <button class="btn danger" onclick="confirmRiskSync()">确认覆盖并同步</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="createOverlay">
+  <div class="modal">
+    <h3 id="createOverlayTitle">正在创建项目</h3>
+    <p>正在复制模板上下文和产出容器，创建完成后将直接进入新项目。</p>
+  </div>
+</div>
+
+
+<!-- 新建项目弹窗（新品） -->
+<div class="newproj-overlay" id="newProjOverlay" role="dialog" aria-modal="true" aria-labelledby="newProjTitle" onclick="if(event.target===this)closeNewProject()">
+  <div class="newproj-panel">
+    <button class="newproj-close" onclick="closeNewProject()" aria-label="关闭">×</button>
+    <h3 class="newproj-title" id="newProjTitle">新建项目</h3>
+    <div class="newproj-sub">填写新品相关信息</div>
+    <div class="newproj-warn">注意：<b>【项目名称】在项目库中会展示给所有人，请不要填写新品相关的敏感信息</b></div>
+
+    <div class="form-grid">
+      <div class="form-item"><label class="req">项目名称</label><input id="npName" placeholder="请输入，例如：2026年8月苹果新品"></div>
+      <div class="form-item"><label class="req">品牌</label><input id="npBrand" value="苹果"></div>
+      <div class="form-item"><label class="req">三级类目</label><input id="npCat" value="手机"></div>
+      <div class="form-item"><label class="req">系列</label><input id="npSeries" value="18"></div>
+      <div class="form-item"><label class="req">时间范围</label>
+        <div class="date-range"><input type="date" id="npStart"><span class="sep">|</span><input type="date" id="npEnd"></div>
+      </div>
+    </div>
+
+    <div class="tpl-reco-title">✦ 模板选择（为你推荐以下模板）</div>
+    <div class="tpl-reco-grid" id="npTplGrid"></div>
+    <div class="np-excel-row">
+      <div class="np-excel-link" onclick="downloadNpTemplate()">⬇️ 下载 Excel 模板</div>
+      <div style="font-size:12px;color:#6b7280">支持识别基础信息、阶段节点和任务节点</div>
+    </div>
+    <div id="npExcelResult" class="np-excel-result"></div>
+    <input type="file" id="npExcelInput" accept=".xlsx,.xls" hidden>
+
+    <div class="manual-link" onclick="showStageEditor()">没找到合适的模板？点我手动创建</div>
+
+    <div class="stage-section" id="npStageSection" style="display:none">
+      <h4>阶段节点设置</h4>
+      <div id="npStageList"></div>
+    </div>
+
+    <div class="newproj-foot">
+      <button class="btn-plain" onclick="closeNewProject()">取消</button>
+      <button class="btn" onclick="confirmNewProject()">确认创建</button>
+    </div>
+  </div>
+</div>
+
+<!-- 选择成员弹窗 -->
+<div class="member-overlay" id="memberOverlay" role="dialog" aria-modal="true" aria-labelledby="memberTitle" onclick="if(event.target===this)closeMemberPicker()">
+  <div class="member-panel">
+    <button class="member-close" onclick="closeMemberPicker()" aria-label="关闭">×</button>
+    <div class="member-title" id="memberTitle">选择成员</div>
+    <div class="member-body">
+      <div class="member-left">
+        <div class="member-search"><input placeholder="请输入关键词" oninput="filterMembers(this.value)"></div>
+        <div class="member-tabs">
+          <button class="active" onclick="switchMemberTab('contact',this)">联系人</button>
+          <button onclick="switchMemberTab('dept',this)">部门</button>
+        </div>
+        <div class="member-list" id="memberList"></div>
+      </div>
+      <div class="member-right">
+        <div class="member-count">已选择：<b id="memberSelCount">1</b> / 100</div>
+        <div class="selected-list" id="memberSelectedList"></div>
+        <label class="notify-check"><input type="checkbox" id="notifyChk" checked>发送通知</label>
+        <div class="notify-msg"><textarea placeholder="在通知中给对方捎句话"></textarea></div>
+      </div>
+    </div>
+    <div class="member-foot">
+      <button class="btn-plain" onclick="closeMemberPicker()">取 消</button>
+      <button class="btn-red" onclick="confirmMembers()">确 定</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- 通用确认弹窗 -->
+<div class="overlay overlay-top" id="confirmOverlay" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="modal">
+    <h3 id="confirmTitle">确认操作</h3>
+    <p id="confirmDesc"></p>
+    <div class="modal-foot">
+      <button class="btn ghost" onclick="closeConfirm()">取消</button>
+      <button class="btn danger" id="confirmOkBtn">确认</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('error', function(e){
+  try{
+    var el=document.getElementById('toast');
+    if(el){ el.textContent='页面错误：'+(e.message||'未知错误'); el.classList.add('show'); setTimeout(function(){el.classList.remove('show')},3000); }
+  }catch(_){}
+});
+window.addEventListener('unhandledrejection', function(e){
+  try{
+    var el=document.getElementById('toast');
+    if(el){ el.textContent='异步错误：'+((e.reason&&e.reason.message)||'未知错误'); el.classList.add('show'); setTimeout(function(){el.classList.remove('show')},3000); }
+  }catch(_){}
+});
+
+/* ---------- Environment-aware navigation ---------- */
+const IS_LOCAL = ['localhost','127.0.0.1'].includes(location.hostname) || location.protocol === 'file:';
+const APPLE_BASE = IS_LOCAL ? '../../changyu-projectspacenew-joyapp/public/index.html' : 'https://projectspacenew.joyapp.jd.com/project.html';
+
+// 侧边栏「新品项目」始终指向项目编辑页，避免误跳到迁移提示页。
+(function(){
+  const link=document.querySelector('nav a.nav-child[href="index.html"]');
+  if(link) link.setAttribute('href', APPLE_BASE);
+})();
+
+function goApple(path){
+  const href = IS_LOCAL ? APPLE_BASE : (APPLE_BASE + (path || ''));
+  if(/^https?:/.test(href)) window.open(href,'_blank');
+  else window.location.href = href;
+}
+function goProjectList(){ window.location.href = 'templates.html'; }
+function goDashboard(path){
+  const suffix = path || '';
+  const href = IS_LOCAL ? ('dashboard.html' + suffix) : ('/dashboard.html' + suffix);
+  if(/^https?:/.test(href)) window.open(href,'_blank');
+  else window.location.href = href;
+}
+
+/* ---------- 新建项目（新品） ---------- */
+const npTplReco=[
+  {id:"watch25",name:"2025年苹果watch",icon:"🔖"},
+  {id:"watch24",name:"2024年苹果watch",icon:"🗃️"},
+  {id:"tpl3",name:"模板3",icon:"🖥️"}
+];
+const NP_EXCEL_DEMO={
+  name:'2026年8月苹果新品',
+  brand:'苹果',
+  category:'手机',
+  series:'18',
+  start:'2026-09-01',
+  end:'2026-10-01',
+  stages:[
+    {name:'蓄水期',start:'2026-09-01',end:'2026-09-10',nodes:[
+      {name:'APP首焦',time:'2026-09-05'},
+      {name:'爆发PUSH',time:'2026-09-08'}
+    ]},
+    {name:'预约期',start:'2026-09-11',end:'2026-09-20',nodes:[
+      {name:'预约弹层发券',time:'2026-09-12'},
+      {name:'预约开启',time:'2026-09-16'}
+    ]},
+    {name:'抢购期',start:'2026-09-21',end:'2026-10-01',nodes:[
+      {name:'大仓库存预定',time:'2026-09-18'},
+      {name:'发布会',time:'2026-09-28'}
+    ]}
+  ]
+};
+let npExcelPrev={};
+let npExcelPrevStages=null;
+let npSelectedTpl=null;
+let npStages=[];
+
+function openNewProject(){
+  closeDrawers();
+  document.getElementById('newProjOverlay').classList.add('show');
+  const now=new Date(),d=n=>String(n).padStart(2,'0');
+  document.getElementById('npStart').value=`${now.getFullYear()}-09-01`;
+  document.getElementById('npEnd').value=`${now.getFullYear()}-10-01`;
+  renderNpTplGrid();
+  // 默认带出一个阶段示例（选中模板后展开）
+  npSelectedTpl=null;
+  npStages=[];
+  npExcelPrev={};
+  document.querySelectorAll('.np-field-updated').forEach(el=>el.classList.remove('np-field-updated'));
+  const npResult=document.getElementById('npExcelResult');
+  if(npResult){npResult.className='np-excel-result';npResult.innerHTML='';}
+  const npInput=document.getElementById('npExcelInput');
+  if(npInput)npInput.value='';
+  document.getElementById('npStageSection').style.display='none';
+  setTimeout(()=>document.getElementById('npName').focus(),60);
+}
+function closeNewProject(){document.getElementById('newProjOverlay').classList.remove('show')}
+function renderNpTplGrid(){
+  const cards=npTplReco.map(t=>`
+    <div class="tpl-reco-card ${npSelectedTpl===t.id?'selected':''}" onclick="selectNpTpl('${t.id}')">
+      <div class="icon">${t.icon}</div><b>${t.name}</b>
+    </div>`).join('');
+  const excelCard=`
+    <div class="tpl-reco-card tpl-excel-card ${npSelectedTpl==='excel'?'selected':''}" onclick="simulateNpExcelUpload()">
+      <div class="icon">📥</div>
+      <b>上传 Excel 识别</b>
+      <small>点击模拟上传 Excel，识别基础信息、阶段节点和任务节点</small>
+    </div>`;
+  document.getElementById('npTplGrid').innerHTML=cards+excelCard;
+}
+
+function markNpExcelUpdated(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.add('np-field-updated');
+  el.title='已根据 Excel 更新';
+  if(!el.dataset.npExcelHook){
+    el.dataset.npExcelHook='1';
+    el.addEventListener('input',()=>el.classList.remove('np-field-updated'));
+    el.addEventListener('change',()=>el.classList.remove('np-field-updated'));
+  }
+}
+
+function setNpExcelValue(id,value){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const prev=el.value;
+  if(prev && prev!==value){
+    npExcelPrev[id]=prev;
+    markNpExcelUpdated(id);
+  }
+  el.value=value||'';
+}
+
+function downloadNpTemplate(){
+  const html=`<table><tr><th>项目名称</th><th>品牌</th><th>三级类目</th><th>系列</th><th>开始日期</th><th>结束日期</th></tr>
+<tr><td>2026年8月苹果新品</td><td>苹果</td><td>手机</td><td>18</td><td>2026-09-01</td><td>2026-10-01</td></tr></table>
+<table><tr><th>阶段</th><th>任务名称</th><th>节点时间</th><th>阶段开始</th><th>阶段结束</th></tr>
+<tr><td>蓄水期</td><td>APP首焦</td><td>2026-09-05</td><td>2026-09-01</td><td>2026-09-10</td></tr>
+<tr><td>预约期</td><td>预约开启</td><td>2026-09-16</td><td>2026-09-11</td><td>2026-09-20</td></tr>
+<tr><td>抢购期</td><td>大仓库存预定</td><td>2026-09-18</td><td>2026-09-21</td><td>2026-10-01</td></tr></table>`;
+  const blob=new Blob([`\ufeff<html><head><meta charset="utf-8"></head><body>${html}</body></html>`],{type:'application/vnd.ms-excel'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='新品发布运营模板.xls';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function showNpExcelResult(ok,title,items){
+  const box=document.getElementById('npExcelResult');
+  if(!box)return;
+  box.className='np-excel-result show'+(ok?'':' err');
+  box.innerHTML=`<div class="title">${ok?'✅':'⚠️'} ${title}</div><div class="meta">${items.map(x=>`<span>${x}</span>`).join('')}</div>`;
+}
+
+function simulateNpExcelUpload(){
+  // 原型演示：点击后直接模拟用户已上传 Excel 并完成解析。
+  handleNpExcelFile({name:'新品发布运营模板.xlsx', size:1024*1024});
+}
+
+function handleNpExcelFile(file){
+  if(!file)return;
+  const okType=/\.(xlsx|xls)$/i.test(file.name);
+  if(!okType){
+    showNpExcelResult(false,'请上传 .xlsx 或 .xls 文件',['当前文件：'+file.name]);
+    return;
+  }
+  if(file.size>10*1024*1024){
+    showNpExcelResult(false,'文件超过 10MB',['当前文件：'+file.name]);
+    return;
+  }
+  const box=document.getElementById('npExcelResult');
+  box.className='np-excel-result show';
+  box.innerHTML='<div class="title">⏳ 正在识别 Excel...</div>';
+  setTimeout(()=>{
+    npSelectedTpl='excel';
+    setNpExcelValue('npName',NP_EXCEL_DEMO.name);
+    setNpExcelValue('npBrand',NP_EXCEL_DEMO.brand);
+    setNpExcelValue('npCat',NP_EXCEL_DEMO.category);
+    setNpExcelValue('npSeries',NP_EXCEL_DEMO.series);
+    setNpExcelValue('npStart',NP_EXCEL_DEMO.start);
+    setNpExcelValue('npEnd',NP_EXCEL_DEMO.end);
+    if(npStages.length) npExcelPrevStages=JSON.parse(JSON.stringify(npStages));
+    npStages=JSON.parse(JSON.stringify(NP_EXCEL_DEMO.stages));
+    renderNpTplGrid();
+    renderNpStages();
+    document.getElementById('npStageSection').style.display='';
+    const stageCount=npStages.length;
+    const nodeCount=npStages.reduce((n,s)=>n+s.nodes.length,0);
+    showNpExcelResult(true,'已识别 '+file.name,[
+      '基础字段：6 个',
+      '阶段节点：'+stageCount+' 个',
+      '任务节点：'+nodeCount+' 个',
+      '空字段已回填，已填写字段已标黄'
+    ]);
+    if(Object.keys(npExcelPrev).length || npExcelPrevStages){
+      const restore=document.createElement('button');
+      restore.textContent='恢复原值';
+      restore.className='btn ghost small';
+      restore.style.marginTop='8px';
+      restore.onclick=()=>{
+        Object.entries(npExcelPrev).forEach(([id,value])=>{
+          const el=document.getElementById(id);
+          if(el){el.value=value;el.classList.remove('np-field-updated');el.title='';}
+        });
+        if(npExcelPrevStages){
+          npStages=JSON.parse(JSON.stringify(npExcelPrevStages));
+          renderNpStages();
+        }
+        npExcelPrev={}; npExcelPrevStages=null;
+        restore.remove();
+        showNpExcelResult(true,'已恢复识别前的字段值',[]);
+      };
+      document.getElementById('npExcelResult').appendChild(restore);
+    }
+  },800);
+}
+
+document.getElementById('npExcelInput').addEventListener('change',function(e){
+  const file=e.target.files[0];
+  handleNpExcelFile(file);
+  e.target.value='';
+});
+function selectNpTpl(id){
+  npSelectedTpl=id;
+  renderNpTplGrid();
+  if(!npStages.length)npStages=[{name:'抢购期',start:'',end:'',nodes:[{name:'发布会',time:''},{name:'预约开启',time:''}]}];
+  document.getElementById('npStageSection').style.display='';
+  renderNpStages();
+}
+function showStageEditor(){
+  npSelectedTpl=null;
+  renderNpTplGrid();
+  if(!npStages.length)npStages=[{name:'',start:'',end:'',nodes:[{name:'',time:''}]}];
+  document.getElementById('npStageSection').style.display='';
+  renderNpStages();
+}
+function renderNpStages(){
+  document.getElementById('npStageList').innerHTML=npStages.map((st,si)=>`
+    <div class="stage-block">
+      <div class="stage-row">
+        <div class="form-item"><label class="req">阶段名称</label><input value="${st.name||''}" placeholder="例如：抢购期" oninput="npStages[${si}].name=this.value"></div>
+        <div class="form-item"><label class="req">时间范围</label>
+          <div class="date-range"><input type="date" value="${st.start||''}" onchange="npStages[${si}].start=this.value"><span class="sep">|</span><input type="date" value="${st.end||''}" onchange="npStages[${si}].end=this.value"></div>
+        </div>
+      </div>
+      ${st.nodes.map((nd,ni)=>`
+        <div class="node-row">
+          <div class="form-item"><label class="req">节点名称</label><input value="${nd.name||''}" placeholder="例如：发布会" oninput="npStages[${si}].nodes[${ni}].name=this.value"></div>
+          <div class="form-item"><label class="req">节点时间</label><input type="date" value="${nd.time||''}" onchange="npStages[${si}].nodes[${ni}].time=this.value"></div>
+          <div style="display:flex;gap:6px;justify-content:flex-end">
+            <button class="stage-mini minus" onclick="removeNpNode(${si},${ni})" title="删除节点">−</button>
+            <button class="stage-mini plus" onclick="addNpNode(${si})" title="添加节点">+</button>
+          </div>
+        </div>`).join('')}
+      <div class="stage-ctrl">
+        <button onclick="addNpStage()" title="新增阶段">+</button>
+        ${npStages.length>1?`<button class="minus" onclick="removeNpStage(${si})" title="删除阶段">−</button>`:''}
+      </div>
+    </div>`).join('');
+}
+function addNpStage(){npStages.push({name:'',start:'',end:'',nodes:[{name:'',time:''}]});renderNpStages()}
+function removeNpStage(i){npStages.splice(i,1);renderNpStages()}
+function addNpNode(si){npStages[si].nodes.push({name:'',time:''});renderNpStages()}
+function removeNpNode(si,ni){if(npStages[si].nodes.length>1){npStages[si].nodes.splice(ni,1);renderNpStages()}}
+
+function confirmNewProject(){
+  const name=document.getElementById('npName').value.trim();
+  if(!name){showToast('请填写项目名称');return;}
+  if(!document.getElementById('npBrand').value.trim()){showToast('请填写品牌');return;}
+  closeNewProject();
+  openMemberPicker();
+}
+
+/* ---------- 选择成员 ---------- */
+const memberContacts=[
+  {id:'m1',name:'田明军',dept:'商家成长研发组-软件开发(团队负责人)',color:'#64748b'},
+  {id:'m2',name:'何一达',dept:'商家成长研发组-软件开发',color:'#e1251b'},
+  {id:'m3',name:'陈庭',dept:'交易运营研发部-软件开发',color:'#db2777'},
+  {id:'m4',name:'温梦迪',dept:'宠物健康组-采销总监(团队负责人)',color:'#8b5cf6'},
+  {id:'m5',name:'舒云杰(Sam)',dept:'开放业务研发组-软件开发',color:'#374151'},
+  {id:'m6',name:'江琪',dept:'开放应用研发组-软件开发',color:'#d97706'},
+  {id:'m7',name:'任静',dept:'交易运营研发部-软件开发',color:'#059669'},
+  {id:'m8',name:'葛芸冲(Grace)',dept:'商家成长研发组-软件开发',color:'#f59e0b'}
+];
+let memberSelected=['m8'];
+function openMemberPicker(){
+  document.getElementById('memberOverlay').classList.add('show');
+  renderMemberList('');
+  renderMemberSelected();
+}
+function closeMemberPicker(){document.getElementById('memberOverlay').classList.remove('show')}
+let memberTab='contact';
+function renderMemberList(kw){
+  const list=document.getElementById('memberList');
+  const arr=memberContacts.filter(m=>!kw||m.name.includes(kw)||m.dept.includes(kw));
+  if(memberTab==='dept'){
+    // 按部门分组展示
+    const groups={};
+    arr.forEach(m=>{
+      const deptName=m.dept.split('-')[0].trim();
+      (groups[deptName]=groups[deptName]||[]).push(m);
+    });
+    list.innerHTML=Object.entries(groups).map(([dept,members])=>`
+      <div class="member-group">
+        <div class="member-group-head">🏢 ${dept}<span class="cnt">${members.length} 人</span></div>
+        ${members.map(m=>`
+          <label class="member-item">
+            <input type="checkbox" ${memberSelected.includes(m.id)?'checked':''} onchange="toggleMember('${m.id}',this.checked)">
+            <span class="avatar" style="background:${m.color}">${m.name[0]}</span>
+            <span class="info"><b>${m.name}</b><span>${m.dept}</span></span>
+          </label>`).join('')}
+      </div>`).join('');
+  }else{
+    list.innerHTML=arr.map(m=>`
+      <label class="member-item">
+        <input type="checkbox" ${memberSelected.includes(m.id)?'checked':''} onchange="toggleMember('${m.id}',this.checked)">
+        <span class="avatar" style="background:${m.color}">${m.name[0]}</span>
+        <span class="info"><b>${m.name}</b><span>${m.dept}</span></span>
+      </label>`).join('');
+  }
+}
+function filterMembers(v){renderMemberList(v.trim())}
+function switchMemberTab(tab,btn){
+  memberTab=tab;
+  document.querySelectorAll('.member-tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMemberList(document.querySelector('.member-search input').value.trim());
+}
+function toggleMember(id,checked){
+  if(checked){if(memberSelected.length>=100){showToast('最多选择 100 人');return} memberSelected.push(id)}
+  else{memberSelected=memberSelected.filter(x=>x!==id)}
+  renderMemberList(document.querySelector('.member-search input').value.trim());
+  renderMemberSelected();
+}
+function removeMember(id){memberSelected=memberSelected.filter(x=>x!==id);renderMemberList(document.querySelector('.member-search input').value.trim());renderMemberSelected()}
+function renderMemberSelected(){
+  document.getElementById('memberSelCount').textContent=memberSelected.length;
+  document.getElementById('memberSelectedList').innerHTML=memberSelected.map(id=>{
+    const m=memberContacts.find(x=>x.id===id);
+    if(!m)return '';
+    return `<div class="selected-item">
+      <span class="avatar" style="background:${m.color}">${m.name[0]}</span>
+      <b>${m.name}</b>
+      <span class="perm">可阅读 ▾</span>
+      <button class="remove" onclick="removeMember('${id}')">×</button>
+    </div>`;
+  }).join('');
+}
+function confirmMembers(){
+  if(!memberSelected.length){showToast('请至少选择 1 位成员');return}
+  closeMemberPicker();
+  // 加入我的项目列表（新品）
+  const now=new Date(),d=n=>String(n).padStart(2,'0');
+  const name=document.getElementById('npName').value.trim()||'苹果新品项目';
+  projects.unshift({id:'p-np-'+Date.now(),name:name,desc:'品牌：'+(document.getElementById('npBrand').value||'苹果')+' · 系列：'+(document.getElementById('npSeries').value||''),createdAt:`${d(now.getMonth()+1)}月${d(now.getDate())}日 ${d(now.getHours())}:${d(now.getMinutes())}`,updatedAt:`${d(now.getMonth()+1)}月${d(now.getDate())}日 ${d(now.getHours())}:${d(now.getMinutes())}`,pinned:false,menuOrder:0,target:APPLE_BASE,type:'new',typeName:'新品',creator:'张玥',mine:true,shared:false});
+  saveProjects();
+  renderProjects();
+  showToast(`项目已创建，已通知 ${memberSelected.length} 位成员`);
+  // window.open 在 setTimeout 回调里可能被弹窗拦截，提供兜底链接
+  const url=APPLE_BASE+'?project='+encodeURIComponent(name);
+  setTimeout(()=>{
+    const win=window.open(url,'_blank');
+    if(!win)showToast('浏览器拦截了新窗口，点此进入：'+url);
+  },900);
+}
+
+const templates = {
+  field: {
+    name: "价促场运营",
+    version: "v1.2",
+    nameRule: "全局唯一",
+    owner:"platform",
+    createdBy:"平台推荐",
+    category: "通用",
+    visibility: "部门可见 · C1/C2/C3",
+    useCount: 12,
+    status: "published",
+    updated: "09月23日",
+    desc: "面向场域经营监控、机会品识别、异常跟进和任务处理。",
+    context: ["场域运营 SOP", "看板指标定义", "风险规则", "机会品识别口径"],
+    copyItems: ["看板加工逻辑", "机会品识别口径", "知识库", "技能"],
+    outputs: ["价促场运营", "任务清单", "最新动态", "AI助手"],
+    permissions: [
+      {ok:true, text:"秒杀场域看板：当前账号可访问"},
+      {ok:false, text:"品牌全量成交明细：当前账号无权限，创建后显示“未接入”"}
+    ],
+    defaultName: "价促场运营0923",
+    target: "templates.html",
+    warning: "当前账号缺少部分数据源权限。副本仍可创建，但无权限模块将显示“未接入”。"
+  },
+  apple: {
+    name: "新品发布运营",
+    version: "v1.0",
+    nameRule: "全局唯一",
+    owner:"procurement",
+    createdBy:"张玥",
+    category: "新品",
+    visibility: "指定 ERP 可见",
+    useCount: 6,
+    status: "published",
+    updated: "09月20日",
+    desc: "面向新品发布节奏，管理货盘确认、资源配置、风控评估和活动上线。",
+    context: ["新品项目目标", "发布节奏", "风控约束", "项目 SOP"],
+    outputs: ["项目计划", "任务看板", "项目知识库", "项目信息面板"],
+    permissions: [
+      {ok:true, text:"项目知识库：当前账号可访问"},
+      {ok:true, text:"新品项目计划：当前账号可访问"}
+    ],
+    defaultName: "新品发布运营0923",
+    target: APPLE_BASE,
+    warning: "无权限缺失。创建后可直接进入 KA 标品新品项目编辑示例页。"
+  }
+};
+
+let projects=loadProjects()||[
+  {id:"p-01",name:"价促场运营0918",desc:"基于价促场运营模板自定义异常跟进规则，用于日常场域监控。",createdAt:"09月18日 09:30",updatedAt:"10月14日 09:30",pinned:true,menuOrder:1,target:"dashboard.html",type:"field",typeName:"价促场",creator:"张玥",mine:true,shared:false},
+  {id:"p-02",name:"价促场运营0920",desc:"沿用价促场运营模板，监控场域指标和机会品清单。",createdAt:"09月20日 09:40",updatedAt:"10月14日 09:30",pinned:true,menuOrder:2,target:"dashboard.html",type:"field",typeName:"价促场",creator:"张玥",mine:true,shared:false},
+  {id:"p-03",name:"苹果新品-iphone18",desc:"苹果9月新品发布协同，跟踪货盘确认、资源和任务。",createdAt:"09月18日 10:00",updatedAt:"10月14日 09:30",pinned:true,menuOrder:3,target:APPLE_BASE,type:"new",typeName:"新品",creator:"任少伟",mine:false,shared:true},
+  {id:"p-04",name:"苹果新品-iphoneduo",desc:"新品项目执行记录与复盘，任务模板尚未处理。",createdAt:"09月18日 14:20",updatedAt:"10月14日 09:30",pinned:false,menuOrder:0,target:APPLE_BASE,type:"new",typeName:"新品",creator:"任少伟",mine:false,shared:true},
+  {id:"p-05",name:"引凤国补一键提报",desc:"根据 SKU 一键提报引凤国补。",createdAt:"09月18日 16:00",updatedAt:"10月14日 09:30",pinned:false,menuOrder:0,target:"dashboard.html",type:"local",typeName:"本地",creator:"张玥",mine:true,shared:false}
+];
+
+let selectedTemplate = null;
+function openCreateChoice(){document.getElementById('createChoiceOverlay').classList.add('show')}
+function closeCreateChoice(){document.getElementById('createChoiceOverlay').classList.remove('show')}
+function openTemplatePicker(){
+  const grid=document.getElementById('templatePickerGrid');
+  grid.innerHTML=Object.entries(templates).filter(([k,t])=>t.status==="published").map(([key,t])=>`
+    <div class="create-choice-card" onclick="closeTemplatePicker();${key==='apple'?'openNewProject()':`openCreate('${key}')`}">
+      <div class="icon">${key==='field'?'📊':'🚀'}</div>
+      <b>${t.name}</b>
+      <p>${t.desc}</p>
+    </div>`).join("");
+  document.getElementById('templatePickerOverlay').classList.add('show');
+}
+function closeTemplatePicker(){document.getElementById('templatePickerOverlay').classList.remove('show')}
+const currentUserRole="procurement";
+let toastTimer;
+
+/* XSS 防护：所有用户输入渲染进 HTML 前必须过 escapeHtml */
+function escapeHtml(s){
+  return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+/* 项目数据 localStorage 持久化 */
+const PROJECTS_KEY="changyuProjects";
+function loadProjects(){
+  try{
+    const raw=localStorage.getItem(PROJECTS_KEY);
+    if(raw){
+      const arr=JSON.parse(raw);
+      if(Array.isArray(arr)&&arr.length)return arr;
+    }
+  }catch(e){}
+  return null;
+}
+function saveProjects(){
+  try{localStorage.setItem(PROJECTS_KEY,JSON.stringify(projects))}catch(e){}
+}
+
+function showToast(text){
+  const el=document.getElementById("toast");
+  el.textContent=text;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove("show"),2200);
+}
+
+function openDrawer(id){
+  closeDrawers();
+  document.getElementById("drawerMask").classList.add("show");
+  document.getElementById(id).classList.add("open");
+  document.getElementById(id).setAttribute("aria-hidden","false");
+}
+
+function closeDrawers(){
+  ["createDrawer","syncDrawer","uploadDrawer","permissionDrawer"].forEach(id=>{
+    document.getElementById(id).classList.remove("open");
+    document.getElementById(id).setAttribute("aria-hidden","true");
+  });
+  document.getElementById("drawerMask").classList.remove("show");
+}
+
+function nowShort(){
+  const d=new Date(), p=n=>String(n).padStart(2,"0");
+  return `${p(d.getMonth()+1)}月${p(d.getDate())}日 ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+function sortedProjects(){
+  return [...projects].sort((a,b)=>{
+    if(a.pinned!==b.pinned)return a.pinned?-1:1;
+    if(a.pinned&&b.pinned)return (a.menuOrder||0)-(b.menuOrder||0);
+    return projects.indexOf(a)-projects.indexOf(b);
+  });
+}
+
+let projectSourceFilter='all';
+let projectTypeFilter='all';
+function setProjectSourceFilter(v,el){
+  projectSourceFilter=v;
+  document.querySelectorAll('.filter-opt[data-source]').forEach(o=>o.classList.toggle('active',o.dataset.source===v));
+  renderProjects();
+}
+function setProjectTypeFilter(v,el){
+  projectTypeFilter=v;
+  document.querySelectorAll('.filter-opt[data-type]').forEach(o=>o.classList.toggle('active',o.dataset.type===v));
+  renderProjects();
+}
+
+let projectView='card';
+function setProjectView(v){
+  projectView=v;
+  document.getElementById('viewCardBtn').classList.toggle('active',v==='card');
+  document.getElementById('viewListBtn').classList.toggle('active',v==='list');
+  document.getElementById('projectCardView').style.display=v==='card'?'':'none';
+  document.getElementById('projectListView').style.display=v==='list'?'':'none';
+}
+
+function renderProjects(){
+  const q=(document.getElementById("searchInput").value||"").trim().toLowerCase();
+  const rows=projects.filter(p=>{
+    if(projectSourceFilter==='mine'&&!p.mine)return false;
+    if(projectSourceFilter==='shared'&&!p.shared)return false;
+    if(projectTypeFilter!=='all'&&p.type!==projectTypeFilter)return false;
+    if(q&&!(p.name+' '+(p.desc||'')+' '+(p.creator||'')).toLowerCase().includes(q))return false;
+    return true;
+  }).sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+
+  // 表格
+  const body=document.getElementById("projectTableBody");
+  if(!rows.length){
+    body.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="big">🔍</div>${q?"未找到匹配的项目，换个关键词试试":"暂无项目，点击右上角「＋ 新建项目」开始"}</div></td></tr>`;
+  }else{
+    body.innerHTML=rows.map(p=>`
+      <tr>
+        <td><span class="project-name" onclick="openProject('${p.id}')">${escapeHtml(p.name)}</span></td>
+        <td style="max-width:320px;color:#4b5563">${escapeHtml(p.desc)}</td>
+        <td><span class="src-tag src-${p.type}">${escapeHtml(p.typeName)}</span></td>
+        <td>${escapeHtml(p.creator)}</td>
+        <td style="white-space:nowrap">${p.createdAt}</td>
+        <td style="white-space:nowrap">${p.updatedAt}</td>
+        <td>
+          <div class="row-actions">
+            <a onclick="renameProject('${p.id}')">重命名</a>
+            <a class="danger" onclick="deleteProject('${p.id}')">删除</a>
+            <a onclick="toggleProjectPin('${p.id}')">${p.pinned?"取消菜单展示":"在菜单展示"}</a>
+          </div>
+        </td>
+      </tr>
+    `).join("");
+  }
+
+  // 卡片
+  const grid=document.getElementById("projectCardView");
+  if(!rows.length){
+    grid.innerHTML=`<div class="empty-state"><div class="big">🔍</div>${q?"未找到匹配的项目，换个关键词试试":"暂无项目，点击右上角「＋ 新建项目」开始"}</div>`;
+  }else{
+    grid.innerHTML=rows.map(p=>`
+      <article class="project-card-item" onclick="openProject('${p.id}')">
+        <div class="project-card-head">
+          <div class="name">${escapeHtml(p.name)}</div>
+          <span class="src-tag src-${p.type}">${escapeHtml(p.typeName)}</span>
+        </div>
+        <div class="project-card-desc">${escapeHtml(p.desc)}</div>
+        <div class="project-card-meta">
+          <div class="row"><span>创建人</span><b>${escapeHtml(p.creator)}</b></div>
+          <div class="row"><span>最近修改</span><b>${p.updatedAt}</b></div>
+        </div>
+        <div class="project-card-foot" onclick="event.stopPropagation()">
+          <div class="actions">
+            <a onclick="renameProject('${p.id}')">重命名</a>
+            <a class="danger" onclick="deleteProject('${p.id}')">删除</a>
+          </div>
+          <button class="btn small" onclick="openProject('${p.id}')">进入项目</button>
+        </div>
+      </article>
+    `).join("");
+  }
+}
+
+function renderTemplates(){
+  const grid=document.getElementById("howtoGrid");
+  const tplCards=Object.entries(templates)
+    .filter(([key,t])=>t.status==="published"||canManageTemplate(t))
+    .map(([key,t])=>`
+    <div class="howto-card" data-search="${t.name} ${t.desc}">
+      <div class="howto-cover ${key==='field'?'cover-red':'cover-blue'}">${key==='field'?'📊':'🚀'}</div>
+      <div class="howto-body">
+        <b>${key==='apple'?'创建新品项目':'模板-'+t.name}</b>
+        <p>${t.desc}</p>
+      </div>
+      <div class="howto-foot">
+        <div class="howto-meta">👥 ${t.useCount} &nbsp; 创建人：${t.createdBy}</div>
+        <div class="howto-actions">
+          <button class="btn ghost small" type="button" onclick="event.stopPropagation();try{openPreview('${key}')}catch(err){console.error(err);showToast('预览失败：'+err.message)}">预览</button>
+          <button class="btn small" onclick="${key==='apple'?'openNewProject()':`openCreate('${key}')`}" ${t.status!=="published"?"disabled":""}>使用</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+  const uploadCard=`
+    <div class="howto-card" data-search="上传我的项目 部署本地产物">
+      <div class="howto-cover cover-green">📦</div>
+      <div class="howto-body">
+        <b>上传我的项目</b>
+        <p>支持上传你自己做的项目（zip 包或 CLI 部署），可分享给小伙伴们一起使用，小伙伴打开可直接用自己的 ERP 使用。</p>
+      </div>
+      <div class="howto-foot">
+        <div class="howto-meta">👥 ${artifacts.length} &nbsp; 创建人：我</div>
+        <div class="howto-actions">
+          <button class="btn ghost small" onclick="showToast('部署示例预览（原型演示）')">预览</button>
+          <button class="btn small" onclick="openUploadDrawer()">使用</button>
+        </div>
+      </div>
+    </div>`;
+  grid.innerHTML=tplCards+uploadCard;
+}
+
+function canManageTemplate(t){
+  return currentUserRole==="admin"||t.owner==="procurement";
+}
+
+function renameProject(id){
+  const p=projects.find(x=>x.id===id);
+  if(!p)return;
+  const name=prompt("修改项目名称",p.name);
+  if(name===null)return;
+  const value=name.trim();
+  if(!value){showToast("项目名称不能为空");return;}
+  p.name=value;
+  p.updatedAt=nowShort();
+  saveProjects();
+  renderProjects();
+  showToast("项目名称已更新");
+}
+
+function toggleProjectPin(id){
+  const p=projects.find(x=>x.id===id);
+  if(!p)return;
+  if(!p.pinned&&projects.filter(x=>x.pinned).length>=3){
+    showToast("最多支持 3 个项目固定到菜单，请先取消不需要的项目");
+    return;
+  }
+  p.pinned=!p.pinned;
+  p.menuOrder=p.pinned?Math.max(0,...projects.filter(x=>x.pinned&&x.id!==p.id).map(x=>x.menuOrder||0))+1:0;
+  saveProjects();
+  renderProjects();
+  showToast(p.pinned?"已固定到菜单":"已取消菜单展示");
+}
+
+let confirmCallback=null;
+function showConfirm(title,desc,onOk){
+  document.getElementById("confirmTitle").textContent=title;
+  document.getElementById("confirmDesc").textContent=desc;
+  confirmCallback=onOk;
+  document.getElementById("confirmOverlay").classList.add("show");
+}
+function closeConfirm(){
+  document.getElementById("confirmOverlay").classList.remove("show");
+  confirmCallback=null;
+}
+document.getElementById("confirmOkBtn").addEventListener("click",()=>{
+  const cb=confirmCallback;
+  closeConfirm();
+  if(cb)cb();
+});
+
+function deleteProject(id){
+  const p=projects.find(x=>x.id===id);
+  if(!p)return;
+  showConfirm("删除项目",`确定删除「${p.name}」？项目内的任务、动态和自动化配置将不可恢复。`,()=>{
+    projects=projects.filter(x=>x.id!==id);
+    saveProjects();
+    renderProjects();
+    showToast("项目已删除");
+  });
+}
+
+function editTemplate(key){
+  showToast("模板编辑入口（原型演示）");
+}
+
+function toggleTemplateStatus(key){
+  const t=templates[key];
+  t.status=t.status==="published"?"hidden":"published";
+  renderTemplates();
+  showToast(t.status==="published"?"模板已上架":"模板已下架");
+}
+
+function deleteTemplate(key){
+  const t=templates[key];
+  showConfirm("删除模板",`确定删除模板「${t.name}」？已创建的项目副本不受影响。`,()=>{
+    delete templates[key];
+    renderTemplates();
+    showToast("模板已删除，已创建项目不受影响");
+  });
+}
+
+function openPreview(key){
+  const t=templates[key];
+  if(!t){showToast('模板不存在');return}
+  if(key==='field'){
+    goDashboard('?preview=1');
+    return;
+  }
+  if(key==='apple'){
+    goApple('?preview=1');
+    return;
+  }
+  showToast('该模板暂未配置预览页');
+}
+
+function openCreateFromPreview(){
+  openCreate(selectedTemplate);
+}
+
+function openCreate(key){
+  selectedTemplate=key;
+  const t=templates[key];
+  document.getElementById("createMeta").textContent=`来源模板：${t.name} · ${t.version}`;
+  document.getElementById("createName").value=t.defaultName;
+  document.getElementById("createDesc").value=t.desc;
+  document.getElementById("copyList").innerHTML=(t.copyItems || [...t.context, ...t.outputs]).map(x=>`<div class="list-item">${x}</div>`).join("");
+  openDrawer("createDrawer");
+}
+
+function createProject(){
+  const t=templates[selectedTemplate];
+  const name=document.getElementById("createName").value.trim()||t.defaultName;
+  const desc=document.getElementById("createDesc").value.trim();
+  if(!name){showToast("请填写项目名称");return;}
+  if(desc.length>200){showToast("项目描述最多 200 字");return;}
+  t.useCount+=1;
+  renderTemplates();
+  closeDrawers();
+  document.getElementById("createOverlayTitle").textContent=`正在创建「${name}」`;
+  document.getElementById("createOverlay").classList.add("show");
+  setTimeout(()=>{
+    document.getElementById("createOverlay").classList.remove("show");
+    if(selectedTemplate==="apple"){
+      window.open(t.target,"_blank");
+    }else{
+      window.location.href=t.target;
+    }
+  },800);
+}
+
+// Auto-open create flow when returning from template preview (?use=xxx)
+document.addEventListener('DOMContentLoaded', function(){
+  const useParam=new URLSearchParams(location.search).get('use');
+  if(useParam&&templates[useParam]){
+    setTimeout(function(){ openCreate(useParam); },150);
+  }
+});
+
+// ESC 统一关闭最上层弹层
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  const topLayers=['confirmOverlay','riskModal','createOverlay','memberOverlay','newProjOverlay','templatePickerOverlay','createChoiceOverlay'];
+  for(const id of topLayers){
+    const el=document.getElementById(id);
+    if(el&&el.classList.contains('show')){
+      if(id==='confirmOverlay')closeConfirm();else el.classList.remove('show');
+      return;
+    }
+  }
+  closeDrawers();
+});
+
+function openApple0922(){
+  goApple();
+}
+
+function openDashboard0918(){
+  window.location.href="dashboard.html";
+}
+
+function openProject(key){
+  const p=projects.find(x=>x.id===key);
+  if(!p)return;
+  if(/^https?:/.test(p.target)){
+    window.open(p.target,"_blank");
+  }else{
+    window.location.href=p.target;
+  }
+}
+
+function openSyncDrawer(){
+  document.getElementById("riskAccept").checked=false;
+  document.getElementById("riskSyncBtn").disabled=true;
+  openDrawer("syncDrawer");
+}
+
+document.getElementById("riskAccept").addEventListener("change",e=>{
+  document.getElementById("riskSyncBtn").disabled=!e.target.checked;
+});
+
+function setProjectStatus(text,badgeText,badgeClass){
+  const statusEl=document.getElementById("status-field1");
+  const badge=document.getElementById("badge-field1");
+  if(statusEl)statusEl.textContent=`当前状态：${text}`;
+  if(badge){
+    if(badgeText){
+      badge.textContent=badgeText;
+      badge.className=`badge ${badgeClass}`;
+      badge.style.display="";
+    }else{
+      badge.style.display="none";
+    }
+  }
+}
+
+function applySyncSelected(){
+  const safeItems=[...document.querySelectorAll(".sync-item:checked")].map(x=>x.dataset.label);
+  const modules=[...document.querySelectorAll(".new-module:checked")].map(x=>x.dataset.label);
+  const conflict=document.querySelector('input[name="conflictRule"]:checked').value;
+  const conflictText={keep:"保留我的版本",template:"使用模板版本",skip:"暂不同步"}[conflict];
+  const summary=[
+    safeItems.length?`已同步：${safeItems.join("、")}`:"",
+    modules.length?`已添加能力：${modules.join("、")}`:"",
+    conflict!=="skip"?`冲突处理：${conflictText}`:"冲突项暂不同步"
+  ].filter(Boolean).join("；");
+  setProjectStatus("部分同步 v1.0 → v1.2","部分同步","warn");
+  closeDrawers();
+  showToast(summary||"已处理同步项");
+}
+
+function applySyncSafe(){
+  setProjectStatus("部分同步 v1.0 → v1.2","部分同步","warn");
+  closeDrawers();
+  showToast("已同步安全项，冲突项保持待处理");
+}
+
+function openRiskModal(){
+  document.getElementById("riskModal").classList.add("show");
+}
+
+function closeRiskModal(){
+  document.getElementById("riskModal").classList.remove("show");
+}
+
+function confirmRiskSync(){
+  setProjectStatus("已采用新版模板结构 v1.2","已覆盖结构","danger");
+  closeRiskModal();
+  closeDrawers();
+  showToast("已生成快照并采用新版模板结构，可在项目设置中回滚");
+}
+
+
+const artifacts=[
+  {id:"a1",name:"营销场域看板0918",source:"本地 Agent 生成",status:"已部署",version:"v2",visibility:"指定人员",days:7,allowRequest:true,users:["张三","李四","王五"],url:"https://ai-space.jd.com/artifacts/a1",updated:"09月18日"},
+  {id:"a2",name:"苹果新品投放页0920",source:"本地上传",status:"已部署",version:"v1",visibility:"私有",days:3,allowRequest:false,users:[],url:"https://ai-space.jd.com/artifacts/a2",updated:"09月20日"}
+];
+let selectedArtifact=null;
+
+function renderArtifacts(){
+  const grid=document.getElementById("artifactGrid");
+  if(!grid)return; // 本页无产物列表区，静默返回（renderTemplates 由初始化流程单独调用）
+  const count=document.getElementById("artifactCount");
+  if(count)count.textContent=artifacts.length;
+  grid.innerHTML=artifacts.map(a=>`
+    <article class="card" data-search="${a.name} ${a.source} ${a.visibility} 本地产物">
+      <div class="card-body">
+        <h3>${a.name}</h3>
+        <div class="badges">
+          <span class="badge ${a.status==='已部署'?'ok':'info'}">${a.status}</span>
+          <span class="badge">${a.version}</span>
+          <span class="badge info">${a.visibility}</span>
+        </div>
+        <div class="meta">来源：${a.source}<br>更新时间：${a.updated}<br>有效期：${a.days} 天</div>
+      </div>
+      <div class="card-foot">
+        <button class="btn ghost small" onclick="openArtifact('${a.id}')">打开</button>
+        <button class="btn ghost small" onclick="openArtifactPermission('${a.id}')">权限</button>
+        <button class="btn small" onclick="copyShareLink('${a.id}')">分享</button>
+      </div>
+    </article>
+  `).join("");
+}
+
+function switchUploadTab(which){
+  const zip=which==='zip';
+  document.getElementById('upPanelZip').style.display=zip?'':'none';
+  document.getElementById('upPanelCli').style.display=zip?'none':'';
+  document.getElementById('upTabZip').style.borderBottom=zip?'2px solid #4f46e5':'2px solid transparent';
+  document.getElementById('upTabCli').style.borderBottom=zip?'2px solid transparent':'2px solid #4f46e5';
+  document.getElementById('upTabZip').style.color=zip?'#4f46e5':'#374151';
+  document.getElementById('upTabCli').style.color=zip?'#374151':'#4f46e5';
+}
+function copyCliCmd(){
+  const cmd='npm i -g @jd/ai-space-cli\n'+'ai-space login\n'+'ai-space deploy ./dist --name "营销场域看板0923"';
+  navigator.clipboard?.writeText(cmd).then(()=>showToast('CLI 命令已复制'),()=>showToast('复制失败，请手动选择'));
+}
+
+function openUploadDrawer(){
+  document.getElementById("artifactName").value="";
+  document.getElementById("artifactFile").value="";
+  document.getElementById("artifactFileName").textContent="未选择文件";
+  openDrawer("uploadDrawer");
+}
+
+document.getElementById("artifactFile").addEventListener("change",e=>{
+  const file=e.target.files[0];
+  document.getElementById("artifactFileName").textContent=file?file.name:"未选择文件";
+});
+
+// 拖拽上传支持
+const dropZone=document.getElementById("dropZone");
+dropZone.addEventListener("dragover",e=>{e.preventDefault();dropZone.style.borderColor="var(--brand)";dropZone.style.background="var(--brand-soft)"});
+dropZone.addEventListener("dragleave",()=>{dropZone.style.borderColor="";dropZone.style.background=""});
+dropZone.addEventListener("drop",e=>{
+  e.preventDefault();
+  dropZone.style.borderColor="";dropZone.style.background="";
+  const file=e.dataTransfer.files[0];
+  if(file&&file.name.toLowerCase().endsWith(".zip")){
+    const dt=new DataTransfer();
+    dt.items.add(file);
+    document.getElementById("artifactFile").files=dt.files;
+    document.getElementById("artifactFileName").textContent=file.name;
+  }else{
+    showToast("仅支持 zip 包");
+  }
+});
+
+function deployArtifact(){
+  const file=document.getElementById("artifactFile").files[0];
+  const name=document.getElementById("artifactName").value.trim();
+  if(!file){showToast("请先选择 HTML 文件或资源包");return;}
+  if(!name){showToast("请填写产物名称");return;}
+  closeDrawers();
+  showToast(`正在部署「${name}」`);
+  setTimeout(()=>{
+    const now=new Date();
+    const mm=String(now.getMonth()+1).padStart(2,"0");
+    const dd=String(now.getDate()).padStart(2,"0");
+    artifacts.unshift({
+      id:"a"+Date.now(),
+      name,
+      source:document.getElementById("artifactSource").value.trim()||"本地 Agent 生成",
+      status:"已部署",
+      version:"v1",
+      visibility:document.getElementById("artifactVisibility").value,
+      days:Number(document.getElementById("artifactDays").value)||7,
+      allowRequest:false,
+      users:[],
+      url:"https://ai-space.jd.com/artifacts/"+Date.now(),target:URL.createObjectURL(file),
+      updated:`${mm}月${dd}日`
+    });
+renderArtifacts();
+    projects.unshift({id:"p-local-"+Date.now(),name:name,desc:(document.getElementById("artifactSource")&&document.getElementById("artifactSource").value)||"本地 Agent 生成",createdAt:nowShort(),updatedAt:nowShort(),pinned:false,menuOrder:0,target:"#",type:"local",typeName:"本地",creator:"张玥",mine:true,shared:false});
+    saveProjects();
+    renderProjects();
+    showToast(`「${name}」部署成功，可在权限中设置可见范围`);
+  },900);
+}
+
+function openArtifact(id){
+  const a=artifacts.find(x=>x.id===id);
+  if(!a)return;
+  if(a.target){
+    window.open(a.target,"_blank");
+    return;
+  }
+  showToast(`已打开「${a.name}」（原型模拟）`);
+}
+
+function openArtifactPermission(id){
+  const a=artifacts.find(x=>x.id===id);
+  if(!a)return;
+  selectedArtifact=id;
+  document.getElementById("permissionArtifactName").textContent=a.name;
+  const scopeRadio=document.querySelector(`input[name="artifactScope"][value="${a.visibility}"]`);
+  if(scopeRadio)scopeRadio.checked=true;
+  document.getElementById("permissionDays").value=a.days;
+  document.getElementById("allowRequest").checked=a.allowRequest;
+  document.getElementById("shareUrl").value=a.url;
+  renderArtifactUsers(a);
+  openDrawer("permissionDrawer");
+}
+
+function renderArtifactUsers(a){
+  document.getElementById("artifactUserList").innerHTML=a.users.map(u=>`
+    <div class="user-row"><span>${u}</span><button class="btn ghost small" onclick="removeArtifactUser('${a.id}','${u}')">移除</button></div>
+  `).join("")||`<div class="small-note">暂未添加可见人员</div>`;
+}
+
+function addArtifactUser(){
+  const a=artifacts.find(x=>x.id===selectedArtifact);
+  const input=document.getElementById("artifactUser");
+  const value=input.value.trim();
+  if(!a||!value)return;
+  if(!a.users.includes(value)){
+    a.users.push(value);
+    a.visibility="指定人员";
+    document.querySelector('input[name="artifactScope"][value="指定人员"]').checked=true;
+  }
+  input.value="";
+  renderArtifactUsers(a);
+}
+
+function removeArtifactUser(id,user){
+  const a=artifacts.find(x=>x.id===id);
+  if(!a)return;
+  a.users=a.users.filter(x=>x!==user);
+  if(a.users.length===0)a.visibility="私有";
+  const radio=document.querySelector(`input[name="artifactScope"][value="${a.visibility}"]`);
+  if(radio)radio.checked=true;
+  renderArtifactUsers(a);
+}
+
+function saveArtifactPermission(){
+  const a=artifacts.find(x=>x.id===selectedArtifact);
+  if(!a)return;
+  a.visibility=document.querySelector('input[name="artifactScope"]:checked').value;
+  a.days=Number(document.getElementById("permissionDays").value)||7;
+  a.allowRequest=document.getElementById("allowRequest").checked;
+  closeDrawers();
+  renderArtifacts();
+  showToast(`「${a.name}」可见范围已更新`);
+}
+
+function copyShareLink(id){
+  const a=artifacts.find(x=>x.id===id||x.id===selectedArtifact);
+  if(!a)return;
+  showToast(`已复制「${a.name}」分享链接`);
+}
+
+renderArtifacts();
+setProjectView(projectView);
+renderProjects();
+renderTemplates();
+
+document.getElementById("searchInput").addEventListener("input",e=>{
+  const q=e.target.value.trim().toLowerCase();
+  // 项目列表走 renderProjects 联合过滤
+  renderProjects();
+  // 模板卡片区按 data-search 显隐
+  document.querySelectorAll("#howtoGrid [data-search]").forEach(card=>{
+    const match=card.dataset.search.toLowerCase().includes(q);
+    card.style.display=match?"":"none";
+  });
+});
+</script>
+</body>
+</html>
+
+.pl-card-progress-text,.empty-state,.count,.badge-num,.howto-meta{font-variant-numeric:tabular-nums}
+.section-head span,.howto-meta,.breadcrumb{text-wrap:pretty}
+.page-title,.section-head h2,.sample-title{text-wrap:balance}

@@ -1,0 +1,16 @@
+{
+  "name": "changyu-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI经营中心项目列表：展示可复用的项目模板与能力入口。",
+  "main": "_ssa_guard.js",
+  "scripts": {
+    "start": "node _ssa_guard.js"
+  },
+  "imagination": {
+    "businessStart": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

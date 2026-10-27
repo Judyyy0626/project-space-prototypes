@@ -1,0 +1,2912 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 经营中心 · 价促场运营</title>
+<link rel="stylesheet" href="common.css">
+<style>
+:root{
+  --bg:#f4f6fb; --panel:#fff; --line:#e5e8ef; --ink:#20242c; --sub:#6b7280;
+  --brand:#4f46e5; --brand-soft:#eef2ff; --accent:#10b981; --warn:#f59e0b;
+  --danger:#ef4444; --shadow:0 12px 30px rgba(31,35,48,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+/* 按压反馈（通用） */
+.btn:active,.btn-red:active,.btn-plain:active,.icon-btn:active,.chip:active,.nav-child:active,.upload-entry:active,.task-switch:active,.nav-item:active{transform:scale(0.96)}
+
+.app{display:grid;grid-template-columns:240px 0px minmax(0px,1fr) 320px;grid-template-rows:56px minmax(0,1fr);height:100vh;transition:grid-template-columns .25s ease}
+.app.chat-open{grid-template-columns:240px 400px minmax(0px,1fr) 320px}
+header{grid-column:1/5;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:0 18px}
+.logo{font-weight:800;font-size:18px;color:var(--brand)}
+.avatar{width:30px;height:30px;border-radius:50%;background:#e5e7eb;display:grid;place-items:center;font-size:12px;color:#4b5563;margin-left:auto}
+nav{grid-column:1;grid-row:2;background:#fff;border-right:1px solid var(--line);padding:16px 10px;overflow:auto;display:flex;flex-direction:column}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;color:#4b5563;font-size:14px;margin-bottom:6px;cursor:pointer}
+.nav-item.active{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.nav-item:hover{background:#f9fafb}
+.nav-title{font-size:12px;color:#9ca3af;margin:18px 8px 8px;font-weight:600}
+.brand-block{display:flex;align-items:center;gap:10px;padding:6px 8px 16px}
+.brand-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+.brand-title{font-weight:800;font-size:16px}
+.brand-sub{font-size:12px;color:#9ca3af;margin-top:2px}
+.nav-child{display:flex;align-items:center;gap:8px;padding:8px 12px 8px 30px;border-radius:8px;color:#4b5563;font-size:14px;margin-bottom:4px;cursor:pointer}
+.nav-child.active{background:#eef2ff;color:#4f46e5;font-weight:700}
+.nav-child:hover{background:#f9fafb}
+.nav-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+main{grid-column:3;grid-row:2;display:flex;flex-direction:column;min-width:0}
+.tabs{display:flex;gap:6px;background:#fff;border-bottom:1px solid var(--line);padding:10px 18px 0}
+.tab{padding:8px 14px;border-radius:8px 8px 0 0;font-size:14px;color:#6b7280;cursor:pointer;border:1px solid transparent;border-bottom:0}
+.tab.active{background:var(--brand-soft);color:var(--brand);font-weight:700;border-color:#e0e7ff}
+.content{flex:1;overflow:auto;padding:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.card h3{font-size:16px;margin-bottom:8px}
+.card p{font-size:13px;color:var(--sub);line-height:1.6}
+.btn{border:0;border-radius:8px;padding:7px 12px;background:var(--brand);color:#fff;font-size:13px;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:#fff;color:var(--brand);border:1px solid #d1d5db}
+.btn.small{padding:5px 9px;font-size:12px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.toolbar span{font-size:12px;color:var(--sub)}
+iframe{width:100%;height:calc(100vh - 210px);border:1px solid var(--line);border-radius:12px;background:#fff}
+.feed-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.feed-item:last-child{border-bottom:0}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:6px}
+.feed-item .meta{font-size:12px;color:#9ca3af;margin-top:4px}
+.task{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:#fff}
+.task.done{opacity:.6;text-decoration:line-through}
+.task .title{font-weight:600;font-size:14px}
+.task .desc{font-size:12px;color:var(--sub);margin-top:4px}
+.task .tag{font-size:11px;padding:2px 7px;border-radius:6px;background:#ecfdf5;color:#059669;margin-top:6px;display:inline-block}
+.task .tag.high{background:#fee2e2;color:#b91c1c}
+.task .tag.medium{background:#fff7ed;color:#c2410c}
+.task .actions{margin-left:auto;display:flex;gap:6px}
+aside{grid-column:4;grid-row:2;background:#fff;border-left:1px solid var(--line);padding:16px;overflow:auto}
+aside h4{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0 6px;font-size:12px;font-weight:700;color:#6b7280}
+.side-group{margin-bottom:4px}
+.side-item{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.side-item b{font-size:13px;display:block;line-height:1.3}
+.side-item span{font-size:11px;color:var(--sub)}
+.member{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
+.chat-col{grid-column:2;grid-row:2;display:flex;flex-direction:column;background:#fff;border-right:1px solid var(--line);min-width:0;overflow:hidden}
+.app:not(.chat-open) .chat-col{display:none}
+.followup{margin-top:10px;padding-top:10px;border-top:1px dashed #e5e7eb}
+.followup-title{font-size:12px;color:#6b7280;margin-bottom:8px}
+.followup-list{display:flex;flex-wrap:wrap;gap:6px}
+.followup-chip{max-width:100%;padding:6px 10px;border:1px solid #e5e7eb;border-radius:999px;background:#fff;color:#4b5563;font-size:12px;cursor:pointer;text-align:left}
+.followup-chip:hover{border-color:#c7d2fe;background:#eef2ff;color:#4f46e5}
+.starter{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 8px 22px rgba(31,35,48,.05)}
+.starter-title{font-size:13px;font-weight:700;color:#374151;margin-bottom:10px}
+.starter-list{display:flex;flex-direction:column;gap:8px}
+.starter-item{display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;background:#f9fafb;color:#4b5563;font-size:13px;cursor:pointer;text-align:left}
+.starter-item:hover{border-color:#c7d2fe;background:#eef2ff;color:#4f46e5}
+.starter-item span{color:#6d28d9}
+.ai-assistant{position:fixed;left:280px;right:auto;bottom:24px;width:420px;background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 18px 40px rgba(31,35,48,.14);z-index:1000;overflow:hidden}
+.ai-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #eef2ff}
+.ai-title{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.ai-title span{color:#6d28d9}
+.ai-close{background:transparent;border:0;font-size:18px;color:#6b7280;cursor:pointer;line-height:1}
+.ai-body{padding:14px}
+.ai-open{width:100%;height:44px;border:1px solid #e5e7eb;border-radius:10px;background:linear-gradient(90deg,#eef2ff,#f5f3ff);color:#4f46e5;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px}
+.ai-open:hover{filter:brightness(.98)}
+.ai-messages{max-height:220px;overflow:auto;margin-bottom:10px;display:none}
+.ai-messages.show{display:block}
+.suggestion{display:flex;align-items:center;gap:8px;background:#f3f4f6;border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:13px;color:#374151;cursor:pointer}
+.suggestion:hover{background:#eef2ff;color:#4f46e5}
+.ai-input{display:flex;align-items:center;gap:8px;margin-top:10px}
+.ai-input input{flex:1;border:1px solid #d1d5db;border-radius:8px;padding:10px 12px;font-size:13px;outline:none}
+.ai-input input:focus{border-color:#c7d2fe}
+.ai-send{width:34px;height:34px;border-radius:50%;background:#4f46e5;color:#fff;border:0;cursor:pointer;font-size:14px;display:grid;place-items:center}
+.ai-launcher{position:fixed;left:280px;right:auto;bottom:24px;background:#4f46e5;color:#fff;border:0;border-radius:999px;padding:10px 16px;font-size:14px;font-weight:700;box-shadow:0 10px 24px rgba(79,70,229,.28);cursor:pointer;z-index:1000}
+.hidden{display:none!important}
+@media(max-width:520px){.ai-assistant{left:16px;right:16px;width:auto}}
+.page-head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;gap:12px;flex-wrap:wrap}
+.page-head-row>div:last-child{flex-shrink:0}
+.page-head-row h3{margin-bottom:6px}
+.page-head-row p{margin:0}
+.sub-tabs{display:flex;gap:8px;margin:14px 0 12px}
+.sub-tab{border:1px solid #e5e7eb;background:#fff;color:#4b5563;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.sub-tab.active{background:#eef2ff;color:#4f46e5;border-color:#c7d2fe}
+.sub-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;margin-left:6px;border-radius:999px;background:#e5e7eb;color:#4b5563;font-size:11px}
+.sub-tab.active .sub-count{background:#c7d2fe;color:#3730a3}
+.task-editor-type-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:10px;padding:4px;margin-bottom:14px}
+.task-editor-type-tab{border:0;background:transparent;color:#6b7280;border-radius:7px;padding:7px 10px;font-size:13px;font-weight:700;cursor:pointer}
+.task-editor-type-tab:hover{color:#4f46e5}
+.task-editor-type-tab.active{background:#fff;color:#4f46e5;box-shadow:0 2px 8px rgba(31,35,48,.06)}
+.list-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 22px rgba(31,35,48,.05);overflow:hidden}
+.list-card .file-table-wrap{border:0;border-radius:0;box-shadow:none}
+.task-view-toggle{display:flex;gap:8px;margin:10px 0 12px}
+.task-view-toggle button{border:1px solid #e5e7eb;background:#fff;color:#4b5563;border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer}
+.task-view-toggle button.active{background:#eef2ff;color:#4f46e5;border-color:#c7d2fe}
+.task-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.task-card-item{display:flex;flex-direction:column;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px;box-shadow:0 8px 22px rgba(31,35,48,.04)}
+.task-card-item.enabled-off{background:#fafafa;border-color:#e5e7eb}
+.task-card-item.enabled-off .task-card-title{color:#6b7280}
+.badge.disabled-tag{background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb}
+.task-card-item.just-toggled{border-color:#c7d2fe;box-shadow:0 0 0 3px #eef2ff}
+
+.task-switch{pointer-events:auto}
+.task-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.task-card-title{font-size:15px;font-weight:800;color:#111827}
+.task-card-desc{font-size:12px;color:var(--sub);line-height:1.6;min-height:40px}
+.task-card-info{margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6;display:grid;gap:6px}
+.task-card-info-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#6b7280}
+.task-card-info-row b{min-width:96px;font-weight:600;color:#9ca3af}
+.task-card-info-row span{color:#111827;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.task-card-foot{display:flex;justify-content:flex-end;gap:6px;margin-top:auto;padding-top:12px}
+.task-card-foot .btn:disabled{opacity:.45;cursor:not-allowed}
+.filter-pill{padding:6px 11px;border:1px solid #e5e7eb;border-radius:999px;background:#fff;color:#4b5563;font-size:12px;cursor:pointer}
+.filter-pill:hover{border-color:#c7d2fe;color:#4f46e5;background:#eef2ff}
+.filter-pill.active{border-color:#c7d2fe;background:#eef2ff;color:#4f46e5;font-weight:700}
+.knowledge-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.k-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px;box-shadow:0 8px 22px rgba(31,35,48,.05)}
+.k-card h4{font-size:14px;margin-bottom:6px}
+.k-card p{font-size:12px;color:var(--sub);line-height:1.5;margin:0 0 10px}
+.k-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11px;color:#6b7280}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:6px;font-size:11px;background:#f3f4f6;color:#4b5563;white-space:nowrap}
+.badge.user{background:#eff6ff;color:#2563eb}
+.badge.auto{background:#f5f3ff;color:#6d28d9}
+.badge.ai{background:#ecfeff;color:#0e7490}
+.k-file{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#4b5563;margin-bottom:8px}
+.k-file b{color:#111827;font-weight:700}
+.k-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.file-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px}
+.upload-entry{background:#fff;border:1px dashed #c7d2fe;border-radius:10px;padding:12px;text-align:center;color:#6b7280;font-size:12px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.upload-entry:hover{background:#eef2ff;color:#4f46e5;border-color:#a5b4fc}
+.upload-entry.active{border-color:#4f46e5;background:#eef2ff;color:#4f46e5}
+.upload-entry small{display:block;margin-top:3px;color:#9ca3af}
+.upload-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px}
+.upload-option{border:1px solid #e5e7eb;border-radius:10px;padding:12px;cursor:pointer;background:#fff}
+.upload-option.active{border-color:#4f46e5;background:#eef2ff}
+.upload-option b{display:block;font-size:13px;color:#111827;margin-bottom:4px}
+.upload-option span{font-size:12px;color:#6b7280}
+.file-search{position:relative;flex:1;min-width:240px;max-width:420px}
+.file-search input{width:100%;border:1px solid #d1d5db;border-radius:8px;padding:8px 10px 8px 32px;font-size:13px;outline:none;background:#fff}
+.file-search input:focus{border-color:#c7d2fe;box-shadow:0 0 0 3px #eef2ff}
+.file-search::before{content:"🔍";position:absolute;left:9px;top:7px;font-size:13px}
+.file-table-wrap{overflow-x:auto;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 22px rgba(31,35,48,.05);-webkit-overflow-scrolling:touch}
+.file-table{width:100%;border-collapse:collapse;min-width:880px}
+#tasks .file-table{min-width:1080px}
+#tasks .file-table td{white-space:nowrap}
+#tasks .file-table td:first-child{white-space:normal;min-width:180px}
+.task-wide{min-width:1420px}
+.file-table th,.file-table td{padding:11px 12px;border-bottom:1px solid #eef0f4;text-align:left;vertical-align:middle}
+.file-table th{background:#f9fafb;color:#6b7280;font-size:12px;font-weight:700;white-space:nowrap}
+.file-table td{font-size:13px;color:#374151}
+.file-table tr:last-child td{border-bottom:0}
+.file-table tbody tr:hover{background:#f8fafc}
+.file-name{font-weight:700;color:#111827;text-decoration:none}
+.file-name:hover{color:#4f46e5;text-decoration:underline}
+.file-sub{font-size:11px;color:#6b7280;margin-top:3px}
+.row-actions{display:flex;gap:6px;flex-wrap:wrap}
+.file-empty{padding:24px;text-align:center;color:#6b7280;font-size:13px}
+.auto-pill{display:inline-flex;align-items:center;padding:2px 7px;border-radius:6px;font-size:11px;background:#f5f3ff;color:#6d28d9;margin-top:4px}
+.badge.low{background:#ecfdf5;color:#059669}
+.badge.high{background:#fee2e2;color:#b91c1c}
+.badge.ok{background:#ecfdf5;color:#059669}
+.badge.warn{background:#fff7ed;color:#c2410c}
+.badge.err{background:#fee2e2;color:#b91c1c}
+.skill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.skill-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px;box-shadow:0 8px 22px rgba(31,35,48,.05)}
+.skill-card h4{font-size:14px;margin-bottom:6px}
+.skill-card p{font-size:12px;color:var(--sub);line-height:1.5;margin:0 0 10px}
+.skill-card{display:flex;flex-direction:column;min-height:170px}
+.skill-card .auto-actions{margin-top:auto;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;padding-top:10px}
+.skill-kv{display:grid;grid-template-columns:64px minmax(0,1fr);gap:5px 8px;font-size:12px;color:#4b5563}
+.skill-kv b{font-weight:600;color:#6b7280}
+.auto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.auto-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px;box-shadow:0 8px 22px rgba(31,35,48,.05)}
+.auto-card h4{font-size:14px;margin-bottom:6px}
+.auto-card p{font-size:12px;color:var(--sub);line-height:1.5;margin:0 0 10px}
+.auto-kv{display:grid;grid-template-columns:72px minmax(0,1fr);gap:5px 8px;font-size:12px;color:#4b5563;margin-bottom:10px}
+.auto-kv b{font-weight:600;color:#6b7280}
+.auto-actions{display:flex;gap:6px;flex-wrap:wrap}
+.mindmap{margin-top:10px;padding-left:0}
+.mm-root{background:#f5f3ff;color:#4c1d95;border:1px solid #ddd6fe;border-radius:10px;padding:10px 12px;font-weight:800;font-size:13px;display:inline-block}
+.mm-branches{margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.mm-branch{background:#fafafa;border:1px solid #e5e7eb;border-radius:10px;padding:10px}
+.mm-branch-title{font-size:13px;font-weight:700;color:#111827;margin-bottom:7px}
+.mm-list{list-style:none;padding-left:10px;margin:0;border-left:2px solid #e5e7eb}
+.mm-list li{position:relative;padding:4px 0 4px 12px;font-size:12px;color:#4b5563;line-height:1.45}
+.mm-list li::before{content:"";position:absolute;left:-6px;top:11px;width:6px;height:6px;border-radius:50%;background:#c7d2fe}
+.clickable{cursor:pointer}
+.clickable:hover{background:#eef2ff;border-color:#c7d2fe}
+.app.project-collapsed{grid-template-columns:240px 0px minmax(0px,1fr) 52px}
+.app.chat-open.project-collapsed{grid-template-columns:240px 400px minmax(0px,1fr) 52px}
+#projectAside{display:flex;flex-direction:column;min-width:0}
+.project-aside-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.project-aside-title{font-size:13px;font-weight:800;color:#111827}
+.icon-btn{width:28px;height:28px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#4b5563;font-size:14px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.icon-btn:hover{background:#eef2ff;color:#4f46e5;border-color:#c7d2fe}
+.project-aside-body{flex:1;min-width:0;overflow:auto}
+#projectAsideStrip{display:none;flex:1;flex-direction:column;align-items:center;gap:10px;padding-top:4px}
+.vertical-label{writing-mode:vertical-rl;text-orientation:mixed;font-size:12px;color:#6b7280;letter-spacing:2px}
+#projectAside.project-collapsed{padding:10px 6px;align-items:center}
+#projectAside.project-collapsed .project-aside-head,
+#projectAside.project-collapsed .project-aside-body{display:none}
+#projectAside.project-collapsed #projectAsideStrip{display:flex}
+.activity-list{display:flex;flex-direction:column;gap:10px}
+.activity-item{display:flex;gap:12px;padding:14px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 22px rgba(31,35,48,.04)}
+.activity-icon{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-size:15px;flex-shrink:0;background:#f5f3ff;color:#6d28d9}
+.activity-icon.ok{background:#ecfdf5;color:#059669}
+.activity-icon.warn{background:#fff7ed;color:#c2410c}
+.activity-icon.err{background:#fee2e2;color:#b91c1c}
+.activity-icon.info{background:#eff6ff;color:#2563eb}
+.activity-title{font-size:14px;font-weight:700;color:#111827}
+.activity-desc{font-size:12px;color:var(--sub);line-height:1.5;margin-top:4px}
+.activity-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11px;color:#6b7280;margin-top:8px}
+.activity-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.history-fields{display:grid;grid-template-columns:78px minmax(0,1fr);gap:5px 8px;font-size:12px;color:#4b5563;margin-top:8px}
+.history-fields b{font-weight:600;color:#6b7280}
+.history-quote{background:#f3f4f6;border-left:3px solid #4f46e5;border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:12px;color:#374151}
+.history-quote b{display:block;color:#4f46e5;margin-bottom:3px}
+.app-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(9px);opacity:0;pointer-events:none;z-index:2200;max-width:min(680px,calc(100vw - 40px));background:#111827;color:#fff;border:1px solid #f59e0b;border-radius:12px;padding:12px 16px;font-size:13px;line-height:1.5;box-shadow:0 16px 40px rgba(17,24,39,.24);transition:opacity .2s ease-out,transform .2s ease-out}
+.app-toast.warning{border-color:#f59e0b;background:#fffbeb;color:#92400e}
+.app-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.app-toast.hidden{display:none}
+.drawer-mask{position:fixed;inset:0;background:rgba(17,24,39,.28);backdrop-filter:blur(2px);z-index:1300}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(520px,calc(100vw - 32px));background:#fff;border-left:1px solid #e5e7eb;box-shadow:-18px 0 46px rgba(17,24,39,.18);z-index:1400;display:flex;flex-direction:column;overflow:hidden}
+.drawer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid #e5e7eb}
+.drawer-title{font-size:16px;font-weight:800;color:#111827}
+.drawer-sub{font-size:12px;color:var(--sub);margin-top:4px}
+.drawer-body{flex:1;overflow-y:auto;padding:16px 18px;background:#fafbff}
+.drawer-kv{display:grid;grid-template-columns:82px minmax(0,1fr);gap:8px 10px;font-size:13px;color:#374151;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px}
+.drawer-kv b{font-weight:600;color:#6b7280}
+.task-chat-toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.task-chat-batch{border:1px solid #e5e7eb;background:#fff;color:#4b5563;border-radius:999px;padding:5px 10px;font-size:12px;cursor:pointer}
+.task-chat-batch.active{border-color:#c7d2fe;background:#eef2ff;color:#4f46e5;font-weight:700}
+.task-chat-list{display:flex;flex-direction:column;gap:12px;padding-bottom:8px}
+.task-chat-item{max-width:84%;padding:12px;border-radius:12px;font-size:13px;line-height:1.5;box-shadow:0 8px 22px rgba(31,35,48,.05)}
+.task-chat-item.user{align-self:flex-end;background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;border-bottom-right-radius:4px}
+.task-chat-item.ai{align-self:flex-start;background:#fff;border:1px solid #e5e7eb;color:#111827;border-bottom-left-radius:4px}
+.task-chat-meta{display:flex;gap:6px;align-items:center;font-size:11px;color:#9ca3af;margin-bottom:6px}
+.task-chat-item.user .task-chat-meta{justify-content:flex-end}
+.task-chat-role{font-weight:800}
+.task-chat-text{white-space:pre-wrap}
+.task-chat-foot{border-top:1px solid #e5e7eb;background:#fff;padding:12px 18px}
+.task-chat-input-shell{position:relative;min-height:150px;background:#fff;border:1px solid #d1d5db;border-radius:12px}
+.task-chat-input-shell:focus-within{border-color:#c7d2fe;box-shadow:0 0 0 3px #eef2ff}
+.task-chat-input-shell textarea{display:block;width:100%;min-height:150px;max-height:260px;resize:none;padding:12px 58px 52px 12px;border:0;outline:0;background:transparent;color:var(--ink);font-size:13px;line-height:1.5}
+.task-chat-placeholder{position:absolute;left:12px;right:58px;top:12px;color:#9ca3af;font-size:13px;line-height:1.5;pointer-events:none}
+.task-chat-placeholder.hidden{display:none}
+.task-chat-tools{position:absolute;left:12px;bottom:12px;display:flex;gap:8px}
+.task-chat-tool-btn{padding:6px 10px;border:1px solid #e5e7eb;background:#fff;color:#4b5563;border-radius:999px;font-size:12px;cursor:pointer}
+.task-chat-tool-btn:hover{border-color:#c7d2fe;color:#4f46e5}
+.task-chat-send{position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;background:#4f46e5;color:#fff;border:0;cursor:pointer;display:grid;place-items:center;font-size:14px}
+.task-chat-disclaimer{font-size:11px;color:#9ca3af;text-align:center;margin-top:8px}
+.task-switch{position:relative;width:36px;height:20px;border-radius:999px;background:#e5e7eb;border:0;cursor:pointer;transition:.2s}
+.task-switch::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.task-switch.on{background:#10b981}
+.task-switch.on::after{left:18px}
+.task-card-next{display:none}
+.static-note{font-size:11px;color:#9ca3af;margin-top:8px}
+.preview-banner{position:sticky;top:0;z-index:1600;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 56px 10px 16px;background:#fff7ed;color:#9a3412;border-bottom:1px solid #fed7aa;font-size:13px;font-weight:800}
+.preview-banner .dot{width:8px;height:8px;border-radius:50%;background:#f97316}
+.preview-actions{position:absolute;right:16px;display:flex;gap:8px}
+.preview-btn{border:1px solid #fed7aa;background:#fff;color:#9a3412;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer}
+.preview-btn.primary{border-color:#4f46e5;background:#4f46e5;color:#fff}
+.preview-btn:hover{filter:brightness(.98)}
+.flow-wrap{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.flow-row{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.flow-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.flow-node{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;box-shadow:0 8px 22px rgba(31,35,48,.04)}
+.flow-node b{display:block;font-size:13px;color:#111827;margin-bottom:3px}
+.flow-node span{font-size:12px;color:var(--sub);line-height:1.4}
+.flow-node.decision{background:#fffbeb;border-color:#fde68a}
+.flow-node.result{background:#f0fdf4;border-color:#bbf7d0}
+.flow-node.alert{background:#fef2f2;border-color:#fecaca}
+.flow-arrow{text-align:center;color:#9ca3af;font-size:16px;line-height:1}
+.flow-label{font-size:12px;color:#4b5563;background:#f9fafb;border:1px solid #e5e7eb;border-radius:999px;padding:3px 9px;display:inline-block}
+.flow-note{margin-top:12px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:12px}
+.flow-note h5{font-size:13px;font-weight:800;color:#111827;margin-bottom:6px}
+.flow-note ul{margin:0;padding-left:18px;color:var(--sub);font-size:12px;line-height:1.6}
+.modal-mask{position:fixed;inset:0;background:rgba(17,24,39,.28);backdrop-filter:blur(2px);z-index:1500}
+.skill-detail-mask{position:fixed;inset:0;background:rgba(17,24,39,.28);backdrop-filter:blur(2px);z-index:1500;display:flex;align-items:center;justify-content:center;padding:20px}
+.skill-detail-mask.hidden{display:none}
+.skill-detail{width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 64px);overflow:auto;background:#fff;border-radius:14px;box-shadow:0 18px 40px rgba(17,24,39,.18);padding:18px}
+.skill-detail h3{font-size:16px;font-weight:800;margin-bottom:8px}
+.skill-detail p{font-size:13px;color:var(--sub);line-height:1.6}
+.skill-detail .section-title{font-size:13px;font-weight:800;color:#111827;margin:16px 0 8px}
+.confirm-mask{position:fixed;inset:0;background:rgba(17,24,39,.34);backdrop-filter:blur(2px);z-index:2100;display:grid;place-items:center}
+.confirm-mask.hidden{display:none}
+.confirm-card{width:min(420px,calc(100vw - 48px));background:#fff;border-radius:14px;box-shadow:0 24px 60px rgba(17,24,39,.25);padding:20px}
+.confirm-card h3{font-size:15px;margin-bottom:8px}
+.confirm-card p{font-size:13px;color:#4b5563;line-height:1.6;margin-bottom:6px}
+.confirm-meta{font-size:12px;color:#9ca3af;margin-bottom:14px}
+.confirm-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+.confirm-danger{background:#ef4444}
+.confirm-danger:hover{background:#dc2626}
+.create-drawer{position:fixed;top:0;right:0;height:100vh;width:min(560px,calc(100vw - 32px));background:#fff;border-left:1px solid #e5e7eb;box-shadow:-18px 0 46px rgba(17,24,39,.18);z-index:1600;display:flex;flex-direction:column;overflow:hidden}
+.create-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid #e5e7eb}
+.create-title{font-size:16px;font-weight:800;color:#111827}
+.create-sub{font-size:12px;color:var(--sub);margin-top:4px}
+.create-body{flex:1;overflow-y:auto;padding:16px 18px;background:#fafbff}
+.create-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid #e5e7eb;background:#fff}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.form-field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.form-field.full{grid-column:1/-1}
+.form-field label{font-size:12px;color:#4b5563;font-weight:700}
+.form-field input,.form-field select,.form-field textarea{width:100%;border:1px solid #d1d5db;border-radius:8px;padding:8px 10px;font-size:13px;outline:none;background:#fff}
+.form-field textarea{min-height:66px;resize:vertical}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:#c7d2fe;box-shadow:0 0 0 3px #eef2ff}
+.ai-draft{background:#f5f3ff;border:1px solid #ddd6fe;border-radius:12px;padding:12px;margin-bottom:14px}
+.ai-draft-title{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:#4c1d95}
+.ai-draft p{font-size:12px;color:#4b5563;line-height:1.5;margin:6px 0 0}
+.ai-origin{font-size:11px;color:#6b7280;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:8px;margin-top:8px;white-space:pre-wrap}
+.confirm-box{border:1px solid #fecaca;background:#fef2f2;border-radius:12px;padding:12px;margin-top:14px}
+.confirm-title{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;color:#b91c1c}
+.confirm-box p{font-size:12px;color:#7f1d1d;line-height:1.5;margin:6px 0 8px}
+.confirm-check{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:#7f1d1d}
+.section-title{font-size:13px;font-weight:800;color:#111827;margin:16px 0 8px}
+.section-title:first-child{margin-top:0}
+.schedule-day-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:6px}
+.schedule-day-option{display:flex;align-items:center;gap:5px;border:1px solid #d1d5db;border-radius:8px;padding:6px 8px;font-size:12px;color:#374151;background:#fff;cursor:pointer}
+.schedule-day-option:hover{border-color:#c7d2fe;background:#eef2ff}
+.schedule-day-option:has(input:checked){border-color:#4f46e5;background:#eef2ff;color:#4f46e5;font-weight:700}
+.dashboard-frame-wrap{position:relative}
+#annotationLayer{position:absolute;inset:0;z-index:20;pointer-events:none;background:transparent}
+#annotationLayer.active{box-shadow:inset 0 0 0 2px rgba(79,70,229,.18)}
+#annotationLayer .annotation-marker,#annotationLayer .annotation-pop{pointer-events:auto}
+.annotation-marker{position:absolute;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;border:2px solid #fff;box-shadow:0 4px 12px rgba(79,70,229,.35);cursor:pointer;transform:translate(-50%,-50%)}
+.annotation-marker.new{background:#f59e0b}
+.annotation-pop{position:absolute;min-width:220px;max-width:280px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 12px 30px rgba(17,24,39,.16);padding:10px;z-index:30}
+.annotation-pop textarea{width:100%;min-height:64px;border:1px solid #d1d5db;border-radius:8px;padding:8px;font-size:12px;outline:none;resize:none}
+.annotation-pop textarea:focus{border-color:#c7d2fe;box-shadow:0 0 0 3px #eef2ff}
+.annotation-text{font-size:12px;color:#374151;line-height:1.45;margin:6px 0 8px;white-space:pre-wrap}
+.annotation-actions{display:flex;justify-content:flex-end;gap:6px}
+.count-pill{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#eef2ff;color:#4f46e5;font-size:11px;font-weight:800}
+.new-pill{display:inline-flex;align-items:center;gap:3px;height:20px;padding:0 7px;border-radius:999px;background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:800;cursor:help}
+.new-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:#ef4444}
+.chat-panel{position:fixed;left:280px;bottom:24px;width:420px;height:540px;max-height:calc(100vh - 48px);background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 18px 40px rgba(31,35,48,.14);z-index:1100;display:flex;flex-direction:column;overflow:hidden}
+.chat-panel.hidden{display:none}
+.chat-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #eef2ff}
+.chat-title{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px}
+.chat-title span{color:#6d28d9}
+.chat-close{background:transparent;border:0;font-size:18px;color:#6b7280;cursor:pointer;line-height:1}
+.chat-body{flex:1;overflow-y:auto;padding:14px;background:#fafbff}
+.chat-input-area{border-top:1px solid #eef2ff;padding:10px 12px;background:#fff}
+.chat-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.chat-chip{padding:6px 10px;border:1px solid #e5e7eb;border-radius:999px;background:#fff;color:#4b5563;font-size:12px;cursor:pointer}
+.chat-chip:hover{border-color:#c7d2fe;background:#eef2ff;color:#4f46e5}
+.chat-input-shell{position:relative;margin:8px 12px 0;min-height:150px;background:#fff;border:1px solid #d1d5db;border-radius:12px}
+.chat-input-shell:focus-within{border-color:#c7d2fe;box-shadow:0 0 0 3px #eef2ff}
+.chat-input-shell textarea{display:block;width:100%;min-height:150px;max-height:260px;resize:none;padding:12px 58px 52px 12px;border:0;outline:0;background:transparent;color:var(--ink);font-size:13px;line-height:1.5}
+.chat-fake-placeholder{position:absolute;left:12px;right:58px;top:12px;display:flex;align-items:flex-start;gap:8px;color:#9ca3af;font-size:13px;line-height:1.5;pointer-events:none}
+.chat-fake-placeholder.hidden{display:none}
+.chat-send{position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;background:#4f46e5;color:#fff;border:0;cursor:pointer;display:grid;place-items:center;font-size:14px}
+.chat-disclaimer{font-size:11px;color:#9ca3af;text-align:center;margin-top:8px}
+.chat-skill-chip{position:absolute;left:10px;top:10px;z-index:3;display:none;align-items:center;gap:5px;background:#f3f4f6;border:1px solid #e5e7eb;color:#111827;border-radius:8px;padding:5px 9px;font-size:13px;font-weight:600;white-space:nowrap;box-shadow:0 1px 3px rgba(31,35,48,.06)}
+.chat-skill-chip.show{display:inline-flex}
+.chat-skill-chip button{width:18px;height:18px;border:0;border-radius:50%;background:#e0e7ff;color:#4f46e5;font-size:11px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.chat-skill-chip button:hover{background:#c7d2fe}
+.chat-knowledge-chip{position:absolute;left:10px;top:10px;z-index:4;display:none;align-items:center;gap:7px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:8px;padding:5px 10px 5px 6px;font-size:13px;color:#111827;white-space:nowrap;box-shadow:0 1px 3px rgba(31,35,48,.06)}
+.chat-knowledge-chip.show{display:inline-flex}
+.chat-knowledge-chip .file-icon{width:20px;height:20px;border-radius:4px;background:#21a366;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800;line-height:1}
+.chat-knowledge-chip .file-name{font-weight:600;max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat-input-tools{position:absolute;left:12px;bottom:12px;display:flex;gap:8px;z-index:2}
+.chat-tool-btn{height:28px;padding:0 10px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;color:#4b5563;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.chat-tool-btn:hover{border-color:#c7d2fe;background:#eef2ff;color:#4f46e5}
+.chat-skill-menu{position:absolute;left:12px;right:12px;bottom:52px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 16px 40px rgba(17,24,39,.18);z-index:8;display:none;flex-direction:column;overflow:hidden}
+.chat-skill-menu.show{display:flex}
+.chat-skill-menu-head{padding:12px 14px;border-bottom:1px solid #eef0f4;position:relative}
+.chat-skill-menu-head::before{content:"🔍";position:absolute;left:24px;top:50%;transform:translateY(-50%);font-size:12px;color:#9ca3af}
+.chat-skill-menu-head input{width:100%;height:34px;border:1px solid #e5e7eb;border-radius:8px;padding:0 10px 0 32px;font-size:12px;outline:none;background:#fff}
+.chat-skill-menu-list{max-height:270px;overflow-y:auto;padding:2px 0}
+.chat-skill-option{padding:11px 14px;cursor:pointer;border-bottom:1px solid #f3f4f6}
+.chat-skill-option:last-child{border-bottom:0}
+.chat-skill-option .name{font-size:13px;font-weight:800;color:#111827}
+.chat-skill-option .desc{font-size:12px;color:#6b7280;margin-top:4px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
+.chat-skill-menu-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px;border-top:1px solid #eef0f4;background:#f9fafb;color:#374151;font-size:13px;cursor:pointer}
+.chat-skill-menu-footer:hover{background:#f8fafc;color:#4f46e5}
+.chat-skill-option:hover{background:#f8fafc}
+.chat-skill-option .name{font-size:12px;font-weight:700;color:#111827}
+.chat-skill-option .desc{font-size:11px;color:#6b7280;margin-top:2px}
+.chat-attach-row{position:absolute;top:10px;right:52px;left:150px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;z-index:2}
+.chat-attachment-chip{display:inline-flex;align-items:center;gap:5px;max-width:180px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:8px;padding:4px 8px;font-size:11px;color:#374151}
+.chat-attachment-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chat-attachment-chip button{border:0;background:transparent;color:#6b7280;cursor:pointer;font-size:11px;line-height:1}
+.chat-task-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px;margin:-4px 0 12px;box-shadow:0 8px 22px rgba(31,35,48,.06)}
+.chat-task-card.confirmed{border-color:#bbf7d0;background:#f0fdf4}
+.chat-task-card.cancelled{opacity:.65}
+.chat-task-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.chat-task-title{font-size:13px;font-weight:800;color:#111827}
+.chat-task-grid{display:grid;grid-template-columns:72px minmax(0,1fr);gap:4px 8px;font-size:12px;color:#4b5563}
+.chat-task-grid b{font-weight:600;color:#6b7280}
+.chat-task-risk{margin-top:10px;padding:10px;border:1px solid #fecaca;background:#fef2f2;border-radius:10px}
+.chat-task-risk-title{font-size:12px;font-weight:800;color:#b91c1c;margin-bottom:5px}
+.chat-task-risk p{font-size:12px;color:#7f1d1d;line-height:1.45;margin:0 0 8px}
+.chat-task-check{display:flex;gap:6px;align-items:flex-start;font-size:12px;color:#7f1d1d;margin-bottom:8px}
+.chat-task-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chat-task-note{font-size:12px;color:#059669;font-weight:700}
+.chat-scope-card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px;margin:10px 0}
+.chat-scope-title{font-size:13px;font-weight:800;color:#111827;margin-bottom:8px}
+.chat-scope-grid{display:grid;grid-template-columns:72px minmax(0,1fr);gap:4px 8px;font-size:12px;color:#4b5563}
+.chat-scope-grid b{font-weight:600;color:#6b7280}
+.chat-scope-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chat-scope-actions .btn{border:1px solid #d1d5db;background:#fff;color:#111827}
+.chat-scope-actions .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.chat-scope-actions .btn.ghost{border-color:#d1d5db}
+.msg{margin-bottom:10px;font-size:13px;line-height:1.5}
+.msg.user{color:#111827}
+.msg.ai{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:8px 10px}
+.msg.ai b{display:block;font-size:12px;color:var(--brand);margin-bottom:4px}
+.footer-note{font-size:11px;color:#9ca3af;text-align:right;margin-top:6px}
+@media(max-width:1100px){.app{grid-template-columns:200px 0 minmax(0,1fr) 280px}.app.chat-open{grid-template-columns:200px 360px minmax(0,1fr) 280px}}
+@media(max-width:900px){.app nav,.app aside{display:none}.app{grid-template-columns:minmax(0,1fr)}.app.chat-open{grid-template-columns:minmax(0,1fr)}.app:not(.chat-open) .chat-col{display:none}.app.chat-open .chat-col{display:flex}
+.app header{grid-column:1/2}
+.app main{grid-column:1;grid-row:auto}
+.app .chat-col{grid-column:1;grid-row:auto}
+#projectAside{display:none}
+}
+</style>
+</head>
+<body>
+<div id="previewBanner" class="preview-banner hidden"><span class="dot"></span>当前为预览，操作都不会保留，仅用于查看项目效果<div class="preview-actions"><button class="preview-btn" onclick="exitPreview()">返回</button><button class="preview-btn primary" onclick="useTemplateFromPreview()">使用模板</button></div></div>
+<div class="app">
+  <header>
+    <div class="logo">AI 经营中心</div>
+    <div class="avatar">ZY</div>
+  </header>
+
+  <nav>
+    <div class="brand-block">
+      <div class="brand-icon">AI</div>
+      <div>
+        <div class="brand-title">AI经营中心</div>
+        <div class="brand-sub">AI Space · v51</div>
+      </div>
+    </div>
+    <div class="nav-item">✏️ 新对话</div>
+    <div class="nav-item">🗂 项目空间</div>
+    <a class="nav-child" href="templates.html" style="text-decoration:none">• 项目列表</a>
+    <a class="nav-child" href="index.html" style="text-decoration:none">• 新品项目</a>
+    <div class="nav-child active">• 价促场运营</div>
+    <div class="nav-item">🧠 AI作战室</div>
+    <div class="nav-item">🛠 AI技能库</div>
+    <div class="nav-item">🗂 AI档案库</div>
+    <div class="nav-bottom">
+      <div class="nav-item">❓ 帮助中心</div>
+      <div class="nav-item">⚙️ 设置</div>
+    </div>
+  </nav>
+
+  <div id="conversation" class="chat-col">
+    <div class="chat-head">
+      <div class="chat-title"><span>✦</span>AI 助手</div>
+      <button class="chat-close" onclick="closeChat()">×</button>
+    </div>
+
+    <div id="chatMessages" class="chat-body">
+      <div id="starterQueries" class="starter">
+        <div class="starter-title">✦ AI 助手已接入当前看板，你可以先问：</div>
+        <div class="starter-list">
+          <button class="starter-item" onclick="sendChat('今天有哪些高成交但未上场的机会品？')"><span>✦</span>今天有哪些高成交但未上场的机会品？</button>
+          <button class="starter-item" onclick="sendChat('创建提示：每天早上9点更新完数据提醒我。')"><span>✦</span>创建提示：每天早上9点更新完数据提醒我。</button>
+          <button class="starter-item" onclick="sendChat('调整看板：商品展示短标题。')"><span>✦</span>调整看板：商品展示短标题。</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <div class="chat-input-shell">
+        <div id="chatKnowledgeChip" class="chat-knowledge-chip hidden">
+          <span class="file-icon">X</span>
+          <span id="chatKnowledgeChipName" class="file-name"></span>
+        </div>
+        <div id="chatSkillChip" class="chat-skill-chip hidden"></div>
+        <div id="chatFakePlaceholder" class="chat-fake-placeholder"><span id="chatFakeText">点击推荐问题，或直接输入你的问题</span></div>
+        <div id="chatAttachmentRow" class="chat-attach-row"></div>
+        <textarea id="chatInput" rows="3"></textarea>
+        <div class="chat-input-tools">
+          <button class="chat-tool-btn" onclick="document.getElementById('chatAttachmentInput').click()" title="上传附件">📎 附件</button>
+          <button class="chat-tool-btn" onclick="toggleChatSkillMenu()" title="选择技能">✦ 技能</button>
+        </div>
+        <div id="chatSkillMenu" class="chat-skill-menu hidden">
+          <div class="chat-skill-menu-head"><input id="chatSkillSearch" placeholder="输入关键词搜索" oninput="renderChatSkillMenu(this.value)"></div>
+          <div id="chatSkillMenuList" class="chat-skill-menu-list"></div>
+          <div class="chat-skill-menu-footer" onclick="openTab('skills');toggleChatSkillMenu()">
+            <span>技能库</span>
+            <span>›</span>
+          </div>
+        </div>
+        <input type="file" id="chatAttachmentInput" multiple hidden onchange="handleChatAttachments(this)">
+        <button class="chat-send" onclick="sendChat()">➤</button>
+      </div>
+      <div class="chat-disclaimer">内容由 AI 生成，仅供参考</div>
+    </div>
+  </div>
+
+  <main>
+    <div class="tabs">
+      <div class="tab active" data-tab="dashboard">数据看板</div>
+      <div class="tab" data-tab="activity">项目动态</div>
+      <div class="tab" data-tab="tasks">自动化任务</div>
+      <div class="tab" data-tab="knowledge">知识库</div>
+      <div class="tab" data-tab="skills">技能</div>
+    </div>
+
+    <div class="content" id="dashboard">
+      <div class="toolbar">
+        <span>当前嵌入：本地场域数据看板快照</span>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost small" onclick="reloadDashboard()">刷新看板</button>
+          <button id="annotateToggle" class="btn small" onclick="toggleAnnotationMode()">标注要修改内容</button>
+        </div>
+      </div>
+      <div class="dashboard-frame-wrap">
+        <iframe id="dashboardFrame" src="dashboard-snapshot.html"></iframe>
+        <div id="annotationLayer"></div>
+      </div>
+      <div class="footer-note">开启标注后，鼠标移入看板会自动选区；点击元素即可添加修改标注。</div>
+    </div>
+
+    <div class="content" id="activity" style="display:none">
+      <div class="card">
+        <div class="page-head-row">
+          <div>
+            <h3>项目动态</h3>
+            <p>记录已经发生且影响项目的看板变化。</p>
+          </div>
+          <span class="badge auto">可追溯</span>
+        </div>
+
+        <div class="filter-bar" id="historyTimeFilter">
+          <button class="filter-pill active" data-range="all">全部</button>
+          <button class="filter-pill" data-range="7d">近 7 日</button>
+          <button class="filter-pill" data-range="today">今日</button>
+        </div>
+
+        <div class="filter-bar" id="historyOperatorFilter">
+          <button class="filter-pill active" data-operator="all">全部操作人</button>
+          <button class="filter-pill" data-operator="张玥">张玥</button>
+          <button class="filter-pill" data-operator="AI助手">AI助手</button>
+        </div>
+      </div>
+
+      <div id="activityList" class="activity-list"></div>
+    </div>
+
+    <div class="content" id="tasks" style="display:none">
+      <div class="card">
+        <div class="page-head-row">
+          <div>
+            <h3>自动化任务</h3>
+            <p>统一管理一次性任务和定时任务；支持查看执行状态、记录和规则。</p>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" onclick="openTaskEditor('task')">新建自动化任务</button>
+          </div>
+        </div>
+
+        <div class="task-view-toggle" id="taskViewToggle">
+          <button class="active" data-view="card" onclick="setTaskViewMode('card')">卡片</button>
+          <button data-view="list" onclick="setTaskViewMode('list')">列表</button>
+        </div>
+
+        <div class="filter-bar" id="taskStatusFilter">
+          <button class="filter-pill active" data-status="all">全部状态</button>
+          <button class="filter-pill" data-status="待开始">待开始</button>
+          <button class="filter-pill" data-status="进行中">进行中</button>
+          <button class="filter-pill" data-status="已结束">已结束</button>
+          <button class="filter-pill" data-status="已失效">已失效</button>
+        </div>
+      </div>
+
+      <div id="taskCardView" class="task-card-grid"></div>
+      <div id="taskListView" style="display:none">
+        <div class="file-table-wrap">
+          <table class="file-table">
+            <thead>
+              <tr>
+                <th>任务名称</th><th>类型</th><th>状态</th><th>下一次执行时间</th><th>最近执行时间</th><th>最近执行结果</th><th>来源</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="taskList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="content" id="knowledge" style="display:none">
+      <div class="card">
+        <div class="page-head-row">
+          <div>
+            <h3>知识库</h3>
+            <p>管理 AI 生成文件和用户上传文件；所有看板加工逻辑统一沉淀到《价促场运营加工与判断逻辑》。</p>
+          </div>
+          <span class="badge" id="knowledgeFileCount">8 个文件</span>
+        </div>
+
+        <div class="file-toolbar">
+          <div class="file-search">
+            <input id="knowledgeSearch" placeholder="按文件名搜索" oninput="renderKnowledge()">
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+            <div class="filter-bar" id="knowledgeSourceFilter" style="margin-top:0">
+              <button class="filter-pill active" data-source="all">全部</button>
+              <button class="filter-pill" data-source="ai">AI生成</button>
+              <button class="filter-pill" data-source="user">用户上传</button>
+            </div>
+            <button class="btn" onclick="openKnowledgeUpload()">上传知识</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="file-table-wrap">
+        <table class="file-table">
+          <thead>
+            <tr><th>文件名</th><th>类型</th><th>来源</th><th>更新人</th><th>更新时间</th><th>大小</th><th>操作</th></tr>
+          </thead>
+          <tbody id="knowledgeFileList"></tbody>
+        </table>
+      </div>
+      <div class="static-note">点击【预览】会打开新页签。AI 看板加工逻辑文档不支持删除，其他文件可删除。</div>
+    </div>
+
+    <div class="content" id="skills" style="display:none">
+      <div class="card">
+        <div class="page-head-row">
+          <div>
+            <h3>技能</h3>
+            <p>项目空间可调用的数据、分析、报名、通知与自动化能力。</p>
+          </div>
+          <span class="badge">静态原型</span>
+        </div>
+      </div>
+      <div id="skillList" class="skill-grid"></div>
+    </div>
+  </main>
+
+  <aside id="projectAside">
+    <div class="project-aside-head">
+      <div class="project-aside-title">项目描述</div>
+      <button id="projectAsideToggle" class="icon-btn" onclick="toggleProjectAside()" title="收起项目描述">»</button>
+    </div>
+    <div id="projectAsideBody" class="project-aside-body">
+      <div class="card" style="margin-bottom:12px">
+        <p>每日监控 8 大价促场数据，筛选出需要报名价促场的商品。</p>
+      </div>
+    <div class="side-group">
+      <h4>项目知识库 <span class="count-pill" id="projectKnowledgeCount">8</span></h4>
+      <div class="side-item clickable" onclick="openTab('knowledge')"><b>营销异常定位 SOP</b><span>自动沉淀 · 可被 AI 引用</span></div>
+      <div class="side-item clickable" onclick="openTab('knowledge')"><b>提报首页下拉二楼小技巧</b><span>张玥 · 业务经验</span></div>
+    </div>
+    <div class="side-group">
+      <h4>技能 <span class="count-pill">3</span></h4>
+      <div class="side-item clickable" onclick="openTab('skills')"><b>发送京ME提醒</b><span>消息通知 · 需确认</span></div>
+      <div class="side-item clickable" onclick="openTab('skills')"><b>创建任务</b><span>任务管理 · 需确认</span></div>
+      <div class="side-item clickable" onclick="openTab('skills')"><b>报名秒杀</b><span>高危动作 · 需确认</span></div>
+    </div>
+    <div class="side-group">
+      <h4>自动化 <span class="count-pill">88</span></h4>
+      <div class="side-item clickable" onclick="openTab('tasks')"><b>每天早上 9 点更新数据</b><span>定时任务 · 启用中</span></div>
+      <div class="side-item clickable" onclick="openTab('tasks')"><b>数据更新后发送京ME提醒</b><span>消息通知 · 启用中</span></div>
+    </div>
+    <div class="side-group">
+      <h4>成员管理</h4>
+      <div class="side-item"><b>张玥</b><span>所有者</span></div>
+      <div class="side-item"><b>郭旭文</b><span>成员</span></div>
+      <div class="side-item"><b>葛芸冲（Grace）</b><span>成员</span></div>
+    </div>
+    </div>
+    <div id="projectAsideStrip">
+      <button class="icon-btn" onclick="toggleProjectAside()" title="展开项目描述">«</button>
+      <span class="vertical-label">项目描述</span>
+    </div>
+  </aside>
+</div>
+
+<div id="appToast" class="app-toast warning hidden"></div>
+<div id="rollbackConfirmMask" class="confirm-mask hidden">
+  <div class="confirm-card" role="dialog" aria-modal="true" aria-labelledby="rollbackConfirmTitle">
+    <h3 id="rollbackConfirmTitle">确认回滚？</h3>
+    <p id="rollbackConfirmDesc"></p>
+    <div class="confirm-meta" id="rollbackConfirmMeta"></div>
+    <div class="confirm-actions">
+      <button class="btn ghost small" onclick="closeRollbackConfirm()">取消</button>
+      <button class="btn small confirm-danger" onclick="confirmHistoryRollback()">确认回滚</button>
+    </div>
+  </div>
+</div>
+
+<button id="aiLauncher" class="ai-launcher hidden" onclick="openAssistant()">✦ AI 助手</button>
+
+<div id="aiAssistant" class="ai-assistant">
+  <div class="ai-head">
+    <div class="ai-title"><span>✦</span>AI 助手</div>
+    <button class="ai-close" onclick="closeAssistant()">×</button>
+  </div>
+
+  <div class="ai-body">
+    <button class="ai-open" onclick="openChat()">✦ 打开对话</button>
+
+    <div class="suggestion" onclick="openChat('今天有哪些高成交但未上场的机会品？')">✦ 今天有哪些高成交但未上场的机会品？</div>
+    <div class="suggestion" onclick="openChat('创建提示：每天早上9点更新完数据提醒我。')">✦ 创建提示：每天早上9点更新完数据提醒我。</div>
+    <div class="suggestion" onclick="openChat('调整看板：商品展示短标题。')">✦ 调整看板：商品展示短标题。</div>
+  </div>
+</div>
+
+<div id="drawerMask" class="drawer-mask hidden" onclick="closeTaskRecords()"></div>
+
+<div id="taskRecordDrawer" class="drawer hidden">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-title" id="recordDrawerTitle">执行记录</div>
+      <div class="drawer-sub" id="recordDrawerSub">定时任务每次执行对应一次对话，可查看结果并继续追问。</div>
+    </div>
+    <button class="ai-close" onclick="closeTaskRecords()">×</button>
+  </div>
+  <div class="drawer-body">
+    <div class="task-chat-toolbar" id="taskChatBatchBar"></div>
+    <div class="task-chat-list" id="taskChatList"></div>
+    <div id="taskChatFollowups" class="followup"></div>
+  </div>
+  <div class="task-chat-foot">
+    <div class="task-chat-input-shell">
+      <div id="taskChatPlaceholder" class="task-chat-placeholder">继续追问本次任务执行</div>
+      <textarea id="taskChatInput" rows="3"></textarea>
+      <div class="task-chat-tools">
+        <button class="task-chat-tool-btn">📎 附件</button>
+        <button class="task-chat-tool-btn">✦ 技能</button>
+      </div>
+      <button class="task-chat-send" onclick="sendTaskChatFollowup()">➤</button>
+    </div>
+    <div class="task-chat-disclaimer">内容由 AI 生成，仅供参考</div>
+  </div>
+</div>
+
+<div id="taskDrawerMask" class="modal-mask hidden" onclick="closeTaskEditor()"></div>
+
+<aside id="taskCreateDrawer" class="create-drawer hidden">
+  <div class="create-head">
+    <div>
+      <div class="create-title" id="taskEditorTitle">新建自动化任务</div>
+      <div class="create-sub" id="taskEditorSubtitle">手动创建</div>
+    </div>
+    <button class="ai-close" onclick="closeTaskEditor()">×</button>
+  </div>
+
+  <div class="create-body">
+    <div id="aiParseCard" class="ai-draft hidden">
+      <div class="ai-draft-title">✦ AI 已解析任务草稿</div>
+      <p>以下字段由静态示例解析生成，需要确认后才会入库。</p>
+      <div class="ai-origin" id="aiParseOrigin"></div>
+    </div>
+
+    <div class="section-title">基本信息</div>
+    <div class="form-grid">
+      <div class="form-field full">
+        <label id="newTaskNameLabel">任务名称 *</label>
+        <input id="newTaskTitle" maxlength="200" placeholder="请输入任务名称">
+      </div>
+      <div class="form-field full" id="automationContentField">
+        <label>任务内容 *</label>
+        <textarea id="newTaskContent" maxlength="200" placeholder="请输入任务内容，200 字以内"></textarea>
+      </div>
+    </div>
+
+    <div class="section-title">时间设置</div>
+    <div class="form-grid">
+      <div class="form-field" id="automationFrequencyField">
+        <label>重复 *</label>
+        <select id="newTaskFrequency" onchange="updateAutomationScheduleField()">
+          <option value="单次">单次</option>
+          <option value="每天">每天</option>
+          <option value="每周">每周</option>
+          <option value="每月">每月</option>
+        </select>
+      </div>
+      <div class="form-field" id="automationTimeField">
+        <label>时间 *</label>
+        <input id="newTaskExecutionTime" type="datetime-local" value="2026-10-15T09:00">
+      </div>
+      <div class="form-field" id="automationExpiryField">
+        <label>有效期 *</label>
+        <select id="newTaskExpiry" onchange="updateAutomationExpiryField()">
+          <option value="长期有效">长期有效</option>
+          <option value="指定日期">指定日期</option>
+        </select>
+      </div>
+      <div class="form-field" id="automationExpiryDateField">
+        <label>结束日期 *</label>
+        <input id="newTaskDueDate" type="date">
+      </div>
+      <div class="form-field full hidden" id="automationScheduleDayField">
+        <label id="newTaskScheduleDayLabel">执行日期 *</label>
+        <div id="automationScheduleDayOptions" class="schedule-day-grid"></div>
+      </div>
+    </div>
+
+    <div id="riskConfirmBox" class="confirm-box hidden">
+      <div class="confirm-title">⚠️ 高风险任务需要二次确认</div>
+      <p>该任务涉及报名、改价、发送消息或影响线上资源。请确认对象、影响范围和执行方式。</p>
+      <label class="confirm-check">
+        <input type="checkbox" id="riskConfirmChecked" onchange="updateCreateButton()">
+        <span>我已确认任务对象、影响范围和执行方式。</span>
+      </label>
+    </div>
+
+  </div>
+
+  <div class="create-foot">
+    <button class="btn ghost" onclick="closeTaskEditor()">取消</button>
+    <button class="btn" id="createTaskBtn" onclick="saveTaskEditor()">确认创建</button>
+  </div>
+</aside>
+
+<div id="knowledgeUploadMask" class="modal-mask hidden" onclick="closeKnowledgeUpload()"></div>
+
+<aside id="knowledgeUploadDrawer" class="create-drawer hidden">
+  <div class="create-head">
+    <div>
+      <div class="create-title">上传知识</div>
+      <div class="create-sub">用户上传知识支持 JS 链接或离线文件；文件数量上限 50 个。</div>
+    </div>
+    <button class="ai-close" onclick="closeKnowledgeUpload()">×</button>
+  </div>
+
+  <div class="create-body">
+    <div class="upload-options">
+      <div class="upload-option active" onclick="setKnowledgeUploadMode('js')">
+        <b>JS 链接</b>
+        <span>提供可访问的 JS 链接，用于动态注入知识。</span>
+      </div>
+      <div class="upload-option" onclick="setKnowledgeUploadMode('file')">
+        <b>离线文件</b>
+        <span>支持 Excel / PDF / TXT / CSV，50M 以下。</span>
+      </div>
+    </div>
+
+    <div class="form-grid" style="margin-top:14px">
+      <div class="form-field full">
+        <label>知识名称 *</label>
+        <input id="knowledgeUploadName" placeholder="例如：营销异常定位SOP">
+      </div>
+      <div class="form-field full hidden" id="knowledgeJsField">
+        <label>JS 链接 *</label>
+        <input id="knowledgeJsUrl" placeholder="https://example.com/knowledge.js">
+      </div>
+      <div class="form-field full hidden" id="knowledgeFileField">
+        <label>离线文件 *</label>
+        <div class="upload-entry" onclick="document.getElementById('knowledgeUploadFile').click()">
+          <b id="knowledgeUploadFileText">点击选择文件</b>
+          <small>支持 .xlsx / .xls / .pdf / .txt / .csv，50M 以下</small>
+          <input type="file" id="knowledgeUploadFile" accept=".xlsx,.xls,.pdf,.txt,.csv" style="display:none" onchange="handleKnowledgeFile(this)">
+        </div>
+      </div>
+    </div>
+    <div class="static-note">用户上传文件数量上限 50 个；当前已上传 <b id="userUploadCount">0</b> 个。</div>
+  </div>
+
+  <div class="create-foot">
+    <button class="btn ghost" onclick="closeKnowledgeUpload()">取消</button>
+    <button class="btn" onclick="saveKnowledgeUpload()">确认上传</button>
+  </div>
+</aside>
+
+<script>
+const tabs=document.querySelectorAll('.tab');
+const taskPanelIds=['dashboard','activity','tasks','knowledge','skills'];
+const HISTORY_TODAY='2026-10-15';
+const HISTORY_NOW='09:30';
+let pendingDashboardScope=null;
+
+const taskTemplateMap={
+  '每天早上9点更新完数据提醒我':{
+    source:'对话创建', confidence:'96%', type:'automation',
+    name:'每天早上9点更新数据提醒', content:'每天早上 09:00 更新完场域数据后，发送提醒给处理人。',
+    status:'待开始', handler:'AI助手', priority:'高',
+    startDate:'2026-10-15', dueDate:'2026-12-31',
+    frequency:'每天', executionTime:'09:00'
+  }
+};
+
+function openTab(tabName){
+  tabs.forEach(t=>t.classList.toggle('active',t.dataset.tab===tabName));
+  taskPanelIds.forEach(id=>document.getElementById(id).style.display=id===tabName?'':'none');
+}
+tabs.forEach(tab=>tab.addEventListener('click',()=>openTab(tab.dataset.tab)));
+
+function reloadDashboard(){document.getElementById('dashboardFrame').src='dashboard-snapshot.html'}
+
+let annotationMode=false;
+let annotations=[];
+let annotationSeq=1;
+let activeAnnotationPop=null;
+
+function sendAnnotationMode(enabled){
+  const frame=document.getElementById('dashboardFrame');
+  try{
+    frame.contentWindow.postMessage({type:'changyu-annotation-mode',enabled},'*');
+  }catch(e){}
+}
+
+function toggleAnnotationMode(){
+  annotationMode=!annotationMode;
+  const layer=document.getElementById('annotationLayer');
+  const btn=document.getElementById('annotateToggle');
+  layer.classList.toggle('active',annotationMode);
+  btn.textContent=annotationMode?'退出标注':'标注要修改内容';
+  btn.classList.toggle('ghost',annotationMode);
+  sendAnnotationMode(annotationMode);
+  if(!annotationMode&&activeAnnotationPop){
+    activeAnnotationPop.remove();
+    activeAnnotationPop=null;
+  }
+}
+
+function closeAnnotationPop(){
+  if(activeAnnotationPop){
+    activeAnnotationPop.remove();
+    activeAnnotationPop=null;
+  }
+}
+
+function popupPosition(rect){
+  const layer=document.getElementById('annotationLayer');
+  const width=Math.min(300,Math.max(220,layer.clientWidth-20));
+  let x=rect.x+rect.width/2-width/2;
+  let y=rect.y+rect.height+10;
+  x=Math.max(8,Math.min(x,layer.clientWidth-width-8));
+  if(y+180>layer.clientHeight)y=Math.max(8,rect.y-190);
+  return {x,y,width};
+}
+
+function openAnnotationEditor(info){
+  closeAnnotationPop();
+  const layer=document.getElementById('annotationLayer');
+  const pos=popupPosition(info.rect);
+  const pop=document.createElement('div');
+  pop.className='annotation-pop';
+  pop.style.left=pos.x+'px';
+  pop.style.top=pos.y+'px';
+  pop.style.width=pos.width+'px';
+  pop.innerHTML=`
+    <b style="font-size:12px">新增标注 #${annotationSeq}</b>
+    <div style="font-size:11px;color:#6b7280;margin:5px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${info.text}">选中：${info.text||info.selector}</div>
+    <textarea placeholder="说明这里要修改什么，例如：机会品卡片建议增加库存状态"></textarea>
+    <div class="annotation-actions">
+      <button class="btn ghost small" onclick="closeAnnotationPop()">取消</button>
+      <button class="btn small" onclick="saveAnnotationFromSelection()">保存</button>
+    </div>`;
+  layer.appendChild(pop);
+  activeAnnotationPop=pop;
+  pop.__info=info;
+  pop.querySelector('textarea').focus();
+}
+
+function saveAnnotationFromSelection(){
+  const pop=activeAnnotationPop;
+  if(!pop)return;
+  const info=pop.__info;
+  const text=pop.querySelector('textarea').value.trim();
+  if(!text)return;
+  const layer=document.getElementById('annotationLayer');
+  const marker=document.createElement('button');
+  marker.className='annotation-marker new';
+  marker.textContent=annotationSeq;
+  marker.style.left=(info.rect.x+info.rect.width/2)+'px';
+  marker.style.top=(info.rect.y+info.rect.height/2)+'px';
+  marker.title=text;
+  marker.onclick=()=>showAnnotationView(info,Number(marker.textContent));
+  layer.appendChild(marker);
+  annotations.push({seq:annotationSeq,...info,comment:text});
+  annotationSeq++;
+  closeAnnotationPop();
+}
+
+function showAnnotationView(info,seq){
+  closeAnnotationPop();
+  const layer=document.getElementById('annotationLayer');
+  const pos=popupPosition(info.rect);
+  const view=document.createElement('div');
+  view.className='annotation-pop';
+  view.style.left=pos.x+'px';
+  view.style.top=pos.y+'px';
+  view.style.width=pos.width+'px';
+  view.innerHTML=`
+    <b style="font-size:12px">标注 #${seq}</b>
+    <div class="annotation-text">${info.comment}</div>
+    <div style="font-size:11px;color:#6b7280;margin-bottom:8px">选中元素：${info.selector}</div>
+    <div class="annotation-actions"><button class="btn ghost small" onclick="closeAnnotationPop()">关闭</button></div>`;
+  layer.appendChild(view);
+  activeAnnotationPop=view;
+}
+
+window.addEventListener('message',e=>{
+  const data=e.data||{};
+  if(data.type!=='changyu-annotation-selected'||!annotationMode)return;
+  const info=data.payload||{};
+  if(!info.rect)return;
+  openAnnotationEditor(info);
+});
+
+const dashboardFrameForAnnotation=document.getElementById('dashboardFrame');
+dashboardFrameForAnnotation.addEventListener('load',()=>{
+  if(annotationMode)sendAnnotationMode(true);
+});
+
+function applyProjectAsideCollapsed(collapsed){
+  const app=document.querySelector('.app');
+  const aside=document.getElementById('projectAside');
+  const btn=document.getElementById('projectAsideToggle');
+  if(!app||!aside||!btn)return;
+  app.classList.toggle('project-collapsed',collapsed);
+  aside.classList.toggle('project-collapsed',collapsed);
+  btn.textContent=collapsed?'«':'»';
+  btn.title=collapsed?'展开项目描述':'收起项目描述';
+}
+
+function toggleProjectAside(){
+  const collapsed=!document.querySelector('.app').classList.contains('project-collapsed');
+  applyProjectAsideCollapsed(collapsed);
+  try{localStorage.setItem('changyuProjectAsideCollapsed',collapsed?'1':'0')}catch(e){}
+}
+
+try{
+  applyProjectAsideCollapsed(localStorage.getItem('changyuProjectAsideCollapsed')==='1');
+}catch(e){}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeAnnotationPop();
+});
+
+let activeTaskView='task';
+let taskStatusFilter='all';
+let taskEditorType='task';
+let pendingEnableAfterEdit=null;
+let taskEditorId=null;
+let taskEditorSource='手动创建';
+let taskViewMode='card';
+let currentTaskRecordId=null;
+let currentTaskRecordBatch=0;
+
+function taskTypeLabel(type){
+  return type==='automation'?'定时任务':'一次性任务';
+}
+
+function taskExecutionText(task){
+  if(task.type==='automation'){
+    const freq=formatAutomationFrequency(task);
+    return `${freq} ${task.executionTime}`;
+  }
+  return `${task.startDate} ${task.executionTime||''}`.trim();
+}
+
+function taskLatestRecord(task){
+  const records=task.records||[];
+  return records.length?records[0].time:'—';
+}
+
+function taskLatestResult(task){
+  const records=task.records||[];
+  return records.length?records[0].success:'—';
+}
+
+function nextRunText(task){
+  if(task.nextRun)return task.nextRun;
+  if(task.type==='automation')return '按规则执行';
+  return task.executionTime||task.startDate||'—';
+}
+
+function todayStr(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// 打开（关闭→开启）是否需要走编辑弹窗：数据失效 / 有歧义时需要确认或重设时间。
+function taskNeedsReconfirmToEnable(item){
+  const today=todayStr();
+  const expiredDue=item.dueDate&&item.dueDate<today;
+  if(item.type==='automation'){
+    return item.status==='已结束'||expiredDue;
+  }
+  // 一次性任务：已完成/已结束/日期已过 = 开启语义变成"重新执行"，需要确认新时间
+  return item.status!=='待开始'||(item.startDate&&item.startDate<today);
+}
+
+function toggleTaskEnabled(id){
+  const item=tasks.find(t=>t.id===id);
+  if(!item)return;
+  const next=!(item.enabled!==false);
+  if(!next){
+    item.enabled=false;
+    renderTasks();
+    flashToggledCard(id);
+    showToast('任务已关闭，已调整到关闭任务后面');
+    return;
+  }
+  // 关闭 → 打开
+  if(taskNeedsReconfirmToEnable(item)){
+    item.enabled=false; // 保持关闭，等编辑保存后生效
+    pendingEnableAfterEdit=item.id;
+    renderTasks();
+    openTaskEditor(item.type,item.id);
+    showToast(item.type==='automation'
+      ?'任务规则已过期或已终止，请确认执行时间和有效期后再开启'
+      :'该任务已结束或已过执行日期，请设置新的执行时间');
+    return;
+  }
+  item.enabled=true;
+  if(item.type==='automation'&&item.status==='已结束')item.status='待开始'; // 恢复可执行态
+  renderTasks();
+  flashToggledCard(id);
+  const nextRun=item.type==='automation'
+    ?`${formatAutomationFrequency(item)} ${item.executionTime||''}`.trim()
+    :(item.executionTime?`${item.startDate} ${item.executionTime}`:item.startDate);
+  showToast(`任务已开启${nextRun?`，下次执行 ${nextRun}`:''}`);
+}
+
+let tasks=[
+  {
+    id:'task-follow', type:'task',
+    name:'跟进高成交但未上场的机会品', status:'待开始',
+    content:'每日对比成交金额 TOP50 与当前在促商品，识别高成交但未报名价促场的机会品，生成报名优先级建议并跟进报名状态。',
+    handler:'张玥', priority:'高', startDate:'2026-10-13', dueDate:'2026-10-14',
+    createdAt:'2026-10-12 10:20:00', updatedAt:'2026-10-12 10:20:00', source:'手动创建'
+  },
+  {
+    id:'task-anomaly', type:'task',
+    name:'分析秒杀场域异动', status:'已结束',
+    content:'监控秒杀场域商品的价格、销量、流量和库存变化，识别异动原因并输出跟进建议，异常商品自动同步到任务清单。',
+    handler:'AI助手', priority:'高', startDate:'2026-10-12', dueDate:'2026-10-13',
+    createdAt:'2026-10-12 10:05:00', updatedAt:'2026-10-12 10:12:00', source:'对话创建'
+  },
+  {
+    id:'task-signup', type:'task',
+    name:'报名秒杀 SKU 100157038287', status:'待开始',
+    content:'为 SKU 100157038287 完成秒杀活动报名：核对活动门槛与库存，复制 SKU 提交报名，并跟踪审核结果。',
+    handler:'张玥', priority:'紧急', startDate:'2026-10-13', dueDate:'2026-10-14',
+    createdAt:'2026-10-12 09:40:00', updatedAt:'2026-10-12 09:41:00', source:'对话创建'
+  },
+  {
+    id:'auto-daily-update', type:'automation',
+    name:'每天更新数据', content:'自动拉取 8 大价促场数据，刷新看板快照。',
+    status:'进行中', handler:'AI助手', priority:'高', startDate:'2026-10-01', dueDate:'2026-12-31',
+    frequency:'每天', executionTime:'09:00',
+    createdAt:'2026-10-01 09:00:00', updatedAt:'2026-10-12 09:04:00', source:'手动创建',
+    records:[
+      {
+        time:'2026-10-12 09:04:00', success:'成功', content:'已更新10-11数据',
+        messages:[
+          {role:'user',time:'2026-10-12 09:00:00',text:'自动拉取 8 大价促场数据，刷新看板快照。'},
+          {role:'ai',time:'2026-10-12 09:03:10',text:'开始执行数据更新：\n1. 秒杀场域已更新\n2. 百亿补贴场域已更新\n3. 便宜包邮场域已更新\n4. CPS 数据已同步\n\n执行状态：成功，看板快照已刷新。'},
+          {role:'user',time:'2026-10-12 09:05:00',text:'今日哪个场域数据异常？'},
+          {role:'ai',time:'2026-10-12 09:05:04',text:'秒杀场域“在线商品数”环比上涨 45%，建议复核 TOP 商品库存和价格。'}
+        ]
+      },
+      {
+        time:'2026-10-11 09:03:00', success:'成功', content:'已更新10-10数据',
+        messages:[
+          {role:'user',time:'2026-10-11 09:00:00',text:'自动拉取 8 大价促场数据，刷新看板快照。'},
+          {role:'ai',time:'2026-10-11 09:02:48',text:'数据更新完成。10-10 看板快照已刷新，机会品数量 36 个，未接入数据源 1 个。'}
+        ]
+      }
+    ]
+  },
+  {
+    id:'auto-weekly-plan', type:'automation',
+    name:'生成本周报名计划', content:'根据机会品和库存情况生成本周报名优先级。',
+    status:'待开始', handler:'AI助手', priority:'中', startDate:'2026-10-13', dueDate:'2026-12-31',
+    frequency:'每周', scheduleDay:['周一'], executionTime:'09:30',
+    createdAt:'2026-10-12 11:00:00', updatedAt:'2026-10-12 11:00:00', source:'手动创建',
+    records:[]
+  },
+  {
+    id:'auto-notify', type:'automation',
+    name:'发送数据更新提醒', content:'数据更新完成后向项目成员发送京ME提醒。',
+    status:'已结束', handler:'AI助手', priority:'中', startDate:'2026-10-01', dueDate:'2026-12-31',
+    frequency:'每天', executionTime:'09:30',
+    createdAt:'2026-10-01 09:10:00', updatedAt:'2026-10-10 15:00:00', source:'手动创建',
+    records:[
+      {
+        time:'2026-10-12 09:13:00', success:'成功', content:'已发送项目成员提醒',
+        messages:[
+          {role:'user',time:'2026-10-12 09:30:00',text:'数据更新完成后向项目成员发送京ME提醒。'},
+          {role:'ai',time:'2026-10-12 09:31:00',text:'已向项目成员发送数据更新完成提醒。'}
+        ]
+      }
+    ]
+  },
+  {
+    id:'auto-quality-scan', type:'automation',
+    name:'低质场域商品巡检', content:'每日扫描场域质量分低于 60 的商品，生成下架/整改建议并同步任务清单。',
+    status:'进行中', handler:'AI助手', priority:'中', startDate:'2026-10-05', dueDate:'2026-11-30',
+    frequency:'每天', executionTime:'10:00',
+    createdAt:'2026-10-05 09:30:00', updatedAt:'2026-10-13 10:02:00', source:'对话创建',
+    records:[
+      {
+        time:'2026-10-13 10:02:00', success:'成功', content:'发现 4 个低质商品，已生成整改建议',
+        messages:[
+          {role:'user',time:'2026-10-13 10:00:00',text:'每日扫描场域质量分低于 60 的商品，生成下架/整改建议并同步任务清单。'},
+          {role:'ai',time:'2026-10-13 10:01:30',text:'今日扫描完成：发现 4 个低质商品，均已生成下架/整改建议，并同步到任务清单。'}
+        ]
+      },
+      {
+        time:'2026-10-12 10:01:00', success:'成功', content:'发现 6 个低质商品，已生成整改建议',
+        messages:[
+          {role:'user',time:'2026-10-12 10:00:00',text:'每日扫描场域质量分低于 60 的商品，生成下架/整改建议并同步任务清单。'},
+          {role:'ai',time:'2026-10-12 10:00:40',text:'今日扫描完成：发现 6 个低质商品，整改建议已同步到任务清单。'}
+        ]
+      }
+    ]
+  },
+  {
+    id:'auto-weekly-report', type:'automation',
+    name:'每周报名效果复盘', content:'每周一生成上周报名效果复盘：通过率、动销率、ROI 排名和优化建议。',
+    status:'待开始', handler:'AI助手', priority:'中', startDate:'2026-10-13', dueDate:'2026-12-31',
+    frequency:'每周', scheduleDay:['周一'], executionTime:'14:00',
+    createdAt:'2026-10-13 11:00:00', updatedAt:'2026-10-13 11:00:00', source:'手动创建',
+    records:[]
+  },
+  {
+    id:'task-price-check', type:'task',
+    name:'核对秒杀报名价格有效性', status:'待开始',
+    content:'核对已报名秒杀 SKU 的活动价与当前售价，标记价格失效风险并提醒处理。',
+    handler:'张玥', priority:'高', startDate:'2026-10-13', dueDate:'2026-10-16',
+    createdAt:'2026-10-13 09:00:00', updatedAt:'2026-10-13 09:00:00', source:'手动创建'
+  },
+  {
+    id:'auto-archive-sync', type:'automation',
+    name:'知识库自动归档', content:'每月 1 日把当月看板加工逻辑与判断规则归档到知识库。',
+    status:'已结束', handler:'AI助手', priority:'低', startDate:'2026-09-01', dueDate:'2026-10-01',
+    frequency:'每月', scheduleDay:['1'], executionTime:'08:00',
+    createdAt:'2026-09-01 08:00:00', updatedAt:'2026-10-01 08:15:00', source:'对话创建',
+    records:[
+      {
+        time:'2026-10-01 08:15:00', success:'成功', content:'已归档 9 月看板逻辑 12 条',
+        messages:[
+          {role:'user',time:'2026-10-01 08:00:00',text:'每月 1 日把当月看板加工逻辑与判断规则归档到知识库。'},
+          {role:'ai',time:'2026-10-01 08:10:00',text:'已归档 9 月看板加工逻辑与判断规则共 12 条。'}
+        ]
+      }
+    ]
+  },
+  {
+    id:'task-stock-review', type:'task', enabled:false,
+    name:'机会品库存复核', status:'待开始',
+    content:'对 TOP10 机会品进行库存复核，缺货商品标记暂缓报名。',
+    handler:'张玥', priority:'中', startDate:'2026-09-25', dueDate:'2026-09-30',
+    createdAt:'2026-09-25 14:00:00', updatedAt:'2026-09-25 14:00:00', source:'手动创建'
+  },
+  {
+    id:'auto-cps-push', type:'automation', enabled:false,
+    name:'CPS 机会品推送', content:'每周四向项目成员推送新增 CPS 机会品清单。',
+    status:'待开始', handler:'AI助手', priority:'低', startDate:'2026-10-08', dueDate:'2026-11-30',
+    frequency:'每周', scheduleDay:['周四'], executionTime:'16:00',
+    createdAt:'2026-10-08 16:00:00', updatedAt:'2026-10-08 16:00:00', source:'对话创建',
+    records:[]
+  }
+];
+
+function statusClass(status){
+  if(status==='已结束')return 'ok';
+  if(status==='进行中')return 'warn';
+  return '';
+}
+
+function taskLatestRecordDate(task){
+  const records=task.records||[];
+  return records.length?String(records[0].time):'';
+}
+
+function taskEnabled(task){
+  return task.enabled!==false;
+}
+
+// 已失效：用户通过开关主动关闭的任务（与状态「已结束」区分）
+function taskDisabledByToggle(task){
+  return task.enabled===false;
+}
+
+function taskNextRunDate(task){
+  if(!taskEnabled(task) || task.status==='已结束') return '';
+  if(task.nextRun) return String(task.nextRun);
+  if(task.executionTime){
+    const time=String(task.executionTime);
+    if(/^\d{4}-\d{2}-\d{2}/.test(time)) return time.slice(0,10).replace(/-/g,'')+' '+time.slice(11);
+    return '9999-12-31 '+time;
+  }
+  if(task.startDate) return String(task.startDate).replace(/-/g,'')+' 00:00:00';
+  return '9999-12-31 23:59:59';
+}
+
+function taskLastRunDate(task){
+  return taskLatestRecordDate(task) || taskNextRunDate(task) || '9999-12-31 23:59:59';
+}
+
+function sortTasks(list){
+  return list.slice().sort((a,b)=>{
+    // Rule 2: enabled tasks always come before disabled tasks.
+    if(taskEnabled(a)!==taskEnabled(b)) return taskEnabled(a)?-1:1;
+    // Rule 1: within the same enabled group, sort by last execution time desc.
+    return String(taskLastRunDate(b)).localeCompare(String(taskLastRunDate(a)));
+  });
+}
+
+function renderTasks(){
+  let rows;
+  if(taskStatusFilter==='已失效'){
+    rows=sortTasks(tasks.filter(t=>taskDisabledByToggle(t)));
+  }else if(taskStatusFilter==='all'){
+    rows=sortTasks(tasks.slice());
+  }else{
+    // 状态筛选排除已失效（开关关闭）的任务，避免「筛选已结束却出现关闭状态任务」的歧义
+    rows=sortTasks(tasks.filter(t=>t.status===taskStatusFilter&&!taskDisabledByToggle(t)));
+  }
+  const cardWrap=document.getElementById('taskCardView');
+  const listEl=document.getElementById('taskList');
+
+  // FLIP: keep positions stable while reordering.
+  const firstRects=new Map();
+  Array.from(cardWrap.children).forEach(el=>{
+    const key=el.dataset.taskId;
+    if(key) firstRects.set(key,el.getBoundingClientRect());
+  });
+
+  cardWrap.innerHTML=rows.map(task=>`
+    <div class="task-card-item ${task.enabled===false?'enabled-off':''}" data-task-id="${task.id}">
+      <div class="task-card-head">
+        <div class="task-card-title">${task.name}${taskDisabledByToggle(task)?' <span class="badge disabled-tag" style="margin-left:6px;vertical-align:2px">已失效</span>':''}</div>
+        <button class="task-switch ${taskEnabled(task)?'on':''}" onclick="toggleTaskEnabled('${task.id}')"></button>
+      </div>
+      <div class="task-card-desc">${task.content||task.desc||'—'}</div>
+      <div class="task-card-info">
+        <div class="task-card-info-row"><b>下一次执行时间</b><span>${taskEnabled(task)&&task.status!=='已结束'?(task.type==='automation'?`${formatAutomationFrequency(task)} ${task.executionTime}`:nextRunText(task)):'—'}</span></div>
+        <div class="task-card-info-row"><b>定期规则</b><span>${task.type==='automation'?formatAutomationFrequency(task):'单次'}</span></div>
+      </div>
+      <div class="task-card-foot">
+        <button class="btn ghost small" onclick="openTaskEditor('${task.type}','${task.id}')">编辑</button>
+        <button class="btn ghost small" onclick="completeTask('${task.id}')">终止</button>
+        <button class="btn ghost small" onclick="deleteTask('${task.id}')">删除</button>
+        ${(task.type==='automation'&&(task.records||[]).length)?`<button class="btn ghost small" onclick="openTaskRecords('${task.id}')">记录</button>`:`<button class="btn ghost small" disabled title="暂无执行记录">记录</button>`}
+      </div>
+    </div>
+  `).join('');
+  if(!rows.length) cardWrap.innerHTML='<div class="file-empty">没有匹配的任务</div>';
+
+  // Animate cards that changed position after the DOM is replaced.
+  Array.from(cardWrap.children).forEach(el=>{
+    const key=el.dataset.taskId;
+    if(!key || !firstRects.has(key)) return;
+    const oldTop=firstRects.get(key).top;
+    const newTop=el.getBoundingClientRect().top;
+    const dy=oldTop-newTop;
+    if(Math.abs(dy)>2){
+      el.style.transform=`translateY(${dy}px)`;
+      el.style.transition='none';
+      requestAnimationFrame(()=>{
+        el.style.transition='transform .28s ease';
+        el.style.transform='';
+      });
+    }
+  });
+
+  listEl.innerHTML='';
+  rows.forEach(task=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><div style="font-weight:700;color:#111827">${task.name}${taskDisabledByToggle(task)?' <span class="badge disabled-tag" style="margin-left:6px">已失效</span>':''}</div></td>
+      <td>${taskTypeLabel(task.type)}</td>
+      <td><span class="badge ${statusClass(task.status)}">${task.status}</span></td>
+      <td>${taskExecutionText(task)}</td>
+      <td>${taskLatestRecord(task)}</td>
+      <td>${taskLatestResult(task)}</td>
+      <td>${task.source}</td>
+      <td><div class="row-actions">
+        ${task.status!=='已结束'?`<button class="btn ghost small" onclick="completeTask('${task.id}')">终止</button>`:''}
+        <button class="btn ghost small" onclick="openTaskEditor('${task.type}','${task.id}')">修改</button>
+        <button class="btn ghost small" onclick="deleteTask('${task.id}')">删除</button>
+      </div></td>`;
+    listEl.appendChild(tr);
+  });
+  if(!rows.length) listEl.innerHTML='<tr><td colspan="8"><div class="file-empty">没有匹配的任务</div></td></tr>';
+}
+
+function flashToggledCard(id){
+  const el=document.querySelector(`.task-card-item[data-task-id="${id}"]`);
+  if(!el)return;
+  el.classList.add('just-toggled');
+  setTimeout(()=>el.classList.remove('just-toggled'),500);
+}
+
+function setTaskView(view){
+  activeTaskView=view;
+  document.getElementById('taskListView').style.display='';
+}
+
+function setTaskViewMode(mode){
+  taskViewMode=mode;
+  document.querySelectorAll('#taskViewToggle button').forEach(btn=>btn.classList.toggle('active',btn.dataset.view===mode));
+  document.getElementById('taskCardView').style.display=mode==='card'?'grid':'none';
+  document.getElementById('taskListView').style.display=mode==='list'?'':'none';
+}
+
+document.querySelectorAll('#taskStatusFilter .filter-pill').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('#taskStatusFilter .filter-pill').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    taskStatusFilter=btn.dataset.status;
+    renderTasks();
+  };
+});
+renderTasks();
+setTaskView('task');
+  setTaskViewMode('card');
+
+function nowDateTime(){
+  const d=new Date(), p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+
+function completeTask(id){
+  const item=tasks.find(t=>t.id===id);
+  if(!item)return;
+  item.status='已结束';
+  item.updatedAt=nowDateTime();
+  renderTasks();
+}
+
+function deleteTask(id){
+  const item=tasks.find(t=>t.id===id);
+  if(!item)return;
+  if(!confirm(`确认删除「${item.name}」？`))return;
+  tasks=tasks.filter(t=>t.id!==id);
+  renderTasks();
+}
+
+function pauseAutomation(id){
+  const item=tasks.find(t=>t.id===id);
+  if(!item)return;
+  item.status='已结束';
+  item.updatedAt=nowDateTime();
+  renderTasks();
+}
+
+function runAutomation(id){
+  const item=tasks.find(t=>t.id===id);
+  if(!item)return;
+  item.status='进行中';
+  item.updatedAt=nowDateTime();
+  item.records.unshift({time:nowDateTime(),success:'成功',content:'手动运行完成'});
+  renderTasks();
+}
+
+function openTaskRecords(id){
+  const item=tasks.find(t=>t.id===id);
+  if(!item)return;
+  currentTaskRecordId=id;
+  currentTaskRecordBatch=0;
+  document.getElementById('recordDrawerTitle').textContent=item.name;
+  document.getElementById('recordDrawerSub').textContent='定时任务每次执行对应一次对话，可查看结果并继续追问。';
+  renderTaskChat(item);
+  const mask=document.getElementById('drawerMask');
+  mask.classList.remove('hidden');
+  mask.classList.add('show');
+  const drawer=document.getElementById('taskRecordDrawer');
+  drawer.classList.remove('hidden');
+  drawer.classList.add('open');
+  drawer.classList.add('show');
+}
+
+function selectTaskRecordBatch(id,batchIndex){
+  const item=tasks.find(t=>t.id===id);
+  if(!item)return;
+  renderTaskChat(item,batchIndex);
+}
+
+function renderTaskChat(item,batchIndex=0){
+  currentTaskRecordBatch=batchIndex;
+  const records=item.records||[];
+  const bar=document.getElementById('taskChatBatchBar');
+  bar.innerHTML=records.length?records.map((r,i)=>`<button class="task-chat-batch ${i===batchIndex?'active':''}" onclick="selectTaskRecordBatch('${item.id}',${i})">${r.time}</button>`).join(''):'<span class="static-note">暂无执行批次</span>';
+  const list=document.getElementById('taskChatList');
+  const record=records[batchIndex];
+  if(!record){
+    list.innerHTML='<div class="file-empty">暂无执行记录</div>';
+    return;
+  }
+  const messages=record.messages||[
+    {role:'user',time:record.time,text:item.content||item.name},
+    {role:'ai',time:record.time,text:`执行${record.success==='成功'?'成功':'异常'}：${record.content}`}
+  ];
+  list.innerHTML=messages.map(m=>`
+    <div class="task-chat-item ${m.role}">
+      <div class="task-chat-meta"><span class="task-chat-role">${m.role==='user'?'自动化任务':'AI 助手'}</span><span>${m.time}</span></div>
+      <div class="task-chat-text">${m.text}</div>
+    </div>`).join('');
+  const drawerBody=document.querySelector('#taskRecordDrawer .drawer-body');
+  if(drawerBody)drawerBody.scrollTop=drawerBody.scrollHeight;
+  renderTaskChatFollowups(item,record,messages);
+}
+
+function renderTaskChatFollowups(item,record,messages){
+  document.getElementById('taskChatPlaceholder')?.classList.add('hidden');
+  const wrap=document.getElementById('taskChatFollowups');
+  const lastAi=[...messages].reverse().find(m=>m.role==='ai');
+  let suggestions=[];
+  if(/数据更新|刷新看板/.test(lastAi?.text||'')){
+    suggestions=['哪个场域数据异常？','生成今日数据更新日报','机会品有什么变化？'];
+  }else if(/报名/.test(lastAi?.text||'')){
+    suggestions=['查看失败 SKU 明细','输出报名优先级','把高优机会品加入任务清单'];
+  }else{
+    suggestions=['总结本次执行结果','异常原因是什么？','按最新数据重新分析'];
+  }
+  wrap.innerHTML=`<div class="followup-title">推荐 Query</div><div class="followup-list">${suggestions.map(q=>`<button class="followup-chip">${q}</button>`).join('')}</div>`;
+  wrap.querySelectorAll('.followup-chip').forEach(btn=>{
+    btn.onclick=()=>{
+      const input=document.getElementById('taskChatInput');
+      input.value=btn.textContent;
+      input.focus();
+    };
+  });
+}
+
+function closeTaskRecords(){
+  const mask=document.getElementById('drawerMask');
+  mask.classList.add('hidden');
+  mask.classList.remove('show');
+  const drawer=document.getElementById('taskRecordDrawer');
+  drawer.classList.add('hidden');
+  drawer.classList.remove('open');
+  drawer.classList.remove('show');
+}
+
+function sendTaskChatFollowup(){
+  const input=document.getElementById('taskChatInput');
+  const text=input.value.trim();
+  if(!text)return;
+  const item=tasks.find(t=>t.id===currentTaskRecordId);
+  if(!item)return;
+  item.records=(item.records||[]);
+  const record=item.records[currentTaskRecordBatch];
+  if(record){
+    record.messages=record.messages||[
+      {role:'user',time:record.time,text:item.content||item.name},
+      {role:'ai',time:record.time,text:`执行${record.success==='成功'?'成功':'异常'}：${record.content}`}
+    ];
+    record.messages.push({role:'user',time:nowDateTime(),text});
+    record.messages.push({role:'ai',time:nowDateTime(),text:'已收到追问。当前任务对话会结合本次执行上下文回答；执行动作仍需确认后才会发起。'});
+  }
+  input.value='';
+  renderTaskChat(item,currentTaskRecordBatch);
+  setTimeout(()=>{
+    const fake=document.getElementById('taskChatPlaceholder');
+    if(fake&&!input.value)fake.classList.remove('hidden');
+  },0);
+}
+
+function isHighRiskForm(){
+  const title=document.getElementById('newTaskTitle').value||'';
+  const content=document.getElementById('newTaskContent')?.value||'';
+  const text=(title+' '+content).toLowerCase();
+  return /报名|改价|发消息|发送消息|京me|爆发push|上线|下线/.test(text);
+}
+
+const WEEKDAY_OPTIONS=['周一','周二','周三','周四','周五','周六','周日'];
+const MONTHDAY_OPTIONS=Array.from({length:31},(_,i)=>String(i+1));
+
+function normalizeScheduleDays(value){
+  if(Array.isArray(value))return value.filter(Boolean);
+  if(!value)return [];
+  return String(value).split(/[、,，\s]+/).filter(Boolean);
+}
+
+function getScheduleDays(){
+  return [...document.querySelectorAll('#automationScheduleDayOptions input:checked')].map(x=>x.value);
+}
+
+function populateScheduleDayOptions(frequency,selected=[]){
+  const container=document.getElementById('automationScheduleDayOptions');
+  const selectedDays=normalizeScheduleDays(selected);
+  const options=frequency==='每周'?WEEKDAY_OPTIONS:frequency==='每月'?MONTHDAY_OPTIONS:[];
+  container.innerHTML=options.map(v=>{
+    const label=frequency==='每月'?`${v}日`:v;
+    return `<label class="schedule-day-option"><input type="checkbox" value="${v}" ${selectedDays.includes(v)?'checked':''}><span>${label}</span></label>`;
+  }).join('');
+}
+
+function updateAutomationScheduleField(){
+  const frequency=document.getElementById('newTaskFrequency').value;
+  const field=document.getElementById('automationScheduleDayField');
+  const label=document.getElementById('newTaskScheduleDayLabel');
+  const expiryField=document.getElementById('automationExpiryDateField');
+  const show=frequency==='每周'||frequency==='每月';
+  field.classList.toggle('hidden',!show);
+  expiryField.classList.toggle('hidden',document.getElementById('newTaskExpiry').value!=='指定日期');
+  if(show){
+    label.textContent='执行日期 *（可多选）';
+    const currentDays=getScheduleDays();
+    const options=frequency==='每月'?MONTHDAY_OPTIONS:WEEKDAY_OPTIONS;
+    populateScheduleDayOptions(frequency,currentDays.filter(v=>options.includes(v)));
+  }
+}
+
+function updateAutomationExpiryField(){
+  const expiry=document.getElementById('newTaskExpiry').value;
+  document.getElementById('automationExpiryDateField').classList.toggle('hidden',expiry!=='指定日期');
+}
+
+function formatAutomationFrequency(task){
+  if(!task.frequency)return '—';
+  const days=normalizeScheduleDays(task.scheduleDay);
+  if((task.frequency==='每周'||task.frequency==='每月')&&days.length){
+    const labels=days.map(v=>task.frequency==='每月'?`${v}日`:v).join('、');
+    return `${task.frequency} ${labels}`;
+  }
+  return task.frequency;
+}
+
+function aiParseTask(text){
+  const clean=(text||'').trim();
+  if(!clean)return null;
+  if(taskTemplateMap[clean]){
+    return JSON.parse(JSON.stringify(taskTemplateMap[clean]));
+  }
+  if(/前\s*3|top\s*3|机会品/.test(clean)){
+    return {
+      source:'对话创建', confidence:'88%', type:'task',
+      name:'跟进 TOP3 机会品', content:'按成交金额从高到低确认 TOP3 机会品是否报名秒杀。',
+      status:'待开始', handler:'张玥', priority:'高',
+      startDate:'2026-10-13', dueDate:'2026-10-14'
+    };
+  }
+  if(/每天.*(更新|拉取)|早上\s*9\s*点/.test(clean)){
+    return {
+      source:'对话创建', confidence:'92%', type:'automation',
+      name:'每天更新数据', content:'自动拉取 8 大价促场数据，刷新看板快照。',
+      status:'待开始', handler:'AI助手', priority:'高',
+      startDate:'2026-10-13', dueDate:'2026-12-31',
+      frequency:'每天', executionTime:'09:00'
+    };
+  }
+  if(/报名|秒杀|百亿补贴|京me|爆发push|发送消息|改价/.test(clean)){
+    return {
+      source:'对话创建', confidence:'76%', type:'task',
+      name:'处理报名相关任务', content:'AI 已识别报名相关动作，需人工确认后执行。',
+      status:'待开始', handler:'张玥', priority:'紧急',
+      startDate:'2026-10-13', dueDate:'2026-10-14'
+    };
+  }
+  return {
+    source:'对话创建', confidence:'62%', type:'task',
+    name:clean.slice(0,40), content:'由对话内容生成的任务草稿，请补充执行细节。',
+    status:'待开始', handler:'张玥', priority:'中',
+    startDate:'2026-10-13', dueDate:'2026-10-14'
+  };
+}
+
+function openTaskEditor(type,id=null,source='手动创建',parsed=null){
+  taskEditorType=type;
+  taskEditorId=id;
+  taskEditorSource=id?(tasks.find(t=>t.id===id)?.source||source):source;
+  const item=id?tasks.find(t=>t.id===id):null;
+  const isAutomation=type==='automation';
+  const parsedData=!item&&parsed?parsed:null;
+  syncTaskEditorTypeControls(id?(source==='对话创建'?'AI 已解析草稿 · 确认后才会入库':'手动创建'):source);
+  document.getElementById('aiParseCard').classList.toggle('hidden',!parsedData);
+  if(parsedData){
+    document.getElementById('aiParseOrigin').textContent=`原始输入：${parsedData.originQuery||'—'}\n解析置信度：${parsedData.confidence||'—'}`;
+  }
+  const d=item||parsedData||{
+    name:'', content:'', dueDate:'2026-10-14', frequency:'单次', executionTime:'2026-10-15T09:00',
+    createdAt:nowDateTime(), updatedAt:nowDateTime()
+  };
+  document.getElementById('newTaskTitle').value=d.name||d.title||'';
+  document.getElementById('newTaskContent').value=d.content||'';
+  document.getElementById('newTaskDueDate').value=d.dueDate||d.due||'2026-10-14';
+  document.getElementById('newTaskFrequency').value=d.frequency||'单次';
+  document.getElementById('newTaskExecutionTime').value=d.executionTime||'2026-10-15T09:00';
+  document.getElementById('newTaskExpiry').value=d.dueDate?'指定日期':'长期有效';
+  populateScheduleDayOptions(d.frequency||'每天',d.scheduleDay||[]);
+  updateAutomationScheduleField();
+  updateAutomationExpiryField();
+  document.getElementById('riskConfirmChecked').checked=false;
+  updateCreateButton();
+  document.getElementById('taskDrawerMask').classList.remove('hidden');
+  document.getElementById('taskCreateDrawer').classList.remove('hidden');
+}
+
+function openTaskDrawer(prefillText='',source='手动创建'){
+  const parsed=aiParseTask(prefillText);
+  if(parsed) parsed.originQuery=prefillText;
+  openTaskEditor(parsed?parsed.type:'task',null,source,parsed);
+}
+
+function setTaskEditorType(type){
+  if(taskEditorId)return;
+  taskEditorType=type;
+  syncTaskEditorTypeControls();
+  updateCreateButton();
+}
+
+function syncTaskEditorTypeControls(subtitle){
+  const isEdit=Boolean(taskEditorId);
+  const isReenable=isEdit&&pendingEnableAfterEdit===taskEditorId;
+  document.getElementById('taskEditorTitle').textContent=isEdit?(isReenable?'重新开启任务':'编辑自动化任务'):'新建自动化任务';
+  document.getElementById('taskEditorSubtitle').textContent=isEdit?'修改可编辑字段；系统字段不可修改':(subtitle==='对话创建'?'AI 已解析草稿 · 确认后才会入库':'手动创建');
+  document.getElementById('newTaskNameLabel').textContent='任务名称 *';
+  document.getElementById('newTaskTitle').maxLength=200;
+  document.getElementById('automationContentField').classList.remove('hidden');
+  document.getElementById('automationFrequencyField').classList.remove('hidden');
+  document.getElementById('automationTimeField').classList.remove('hidden');
+  document.getElementById('automationExpiryField').classList.remove('hidden');
+}
+
+function closeTaskEditor(){
+  document.getElementById('taskDrawerMask').classList.add('hidden');
+  document.getElementById('taskCreateDrawer').classList.add('hidden');
+}
+
+function updateCreateButton(){
+  const high=isHighRiskForm();
+  const checked=document.getElementById('riskConfirmChecked').checked;
+  document.getElementById('riskConfirmBox').classList.toggle('hidden',!high);
+  document.getElementById('createTaskBtn').disabled=high&&!checked;
+  document.getElementById('createTaskBtn').textContent=high?'确认风险并创建':'确认创建';
+}
+
+function saveTaskEditor(){
+  const name=document.getElementById('newTaskTitle').value.trim();
+  const content=document.getElementById('newTaskContent')?.value.trim()||'';
+  if(!name){alert('请填写任务名称。');return;}
+  if(name.length>200){alert('任务名称不能超过 200 字。');return;}
+  if(!content){alert('请填写任务内容。');return;}
+  const dueDate=document.getElementById('newTaskDueDate').value;
+  const frequency=document.getElementById('newTaskFrequency').value;
+  const type=frequency==='单次'?'task':'automation';
+  let scheduleDays=[];
+  if(frequency==='每周'||frequency==='每月'){
+    scheduleDays=getScheduleDays();
+    if(!scheduleDays.length){alert('请至少选择一个执行日期。');return;}
+  }
+  const high=isHighRiskForm();
+  if(high&&!document.getElementById('riskConfirmChecked').checked){
+    alert('高风险任务需要先完成二次确认。');
+    return;
+  }
+  const updatedAt=nowDateTime();
+  const startDate=document.getElementById('newTaskExecutionTime').value.slice(0,10);
+  const base={
+    name,
+    startDate, dueDate, updatedAt, frequency
+  };
+  if(taskEditorId){
+    const idx=tasks.findIndex(t=>t.id===taskEditorId);
+    tasks[idx]={...tasks[idx],...base};
+    if(type==='automation'){
+      tasks[idx].content=content;
+      tasks[idx].scheduleDay=scheduleDays;
+      tasks[idx].executionTime=document.getElementById('newTaskExecutionTime').value.slice(11,16);
+    }
+    // 从关闭态经编辑确认开启的：保存后自动置为开启，状态恢复为待开始
+    if(tasks[idx].enabled===false&&typeof pendingEnableAfterEdit!=='undefined'&&pendingEnableAfterEdit===taskEditorId){
+      tasks[idx].enabled=true;
+      if(type==='automation'&&tasks[idx].status==='已结束')tasks[idx].status='待开始';
+      if(type==='task'&&['已完成','已结束'].includes(tasks[idx].status))tasks[idx].status='待开始';
+      pendingEnableAfterEdit=null;
+    }
+  }else{
+    const item={
+      id:(type==='automation'?'auto-':'task-')+Date.now(),
+      type,
+      createdAt:nowDateTime(),
+      source:taskEditorSource,
+      ...base
+    };
+    if(type==='automation'){
+      item.content=content;
+      item.scheduleDay=scheduleDays;
+      item.executionTime=document.getElementById('newTaskExecutionTime').value.slice(11,16);
+      item.records=[];
+    }
+    tasks.unshift(item);
+  }
+  renderTasks();
+  closeTaskEditor();
+}
+
+let knowledgeUploadMode='js';
+let knowledgeUploadSelectedFile=null;
+
+function userUploadCount(){
+  return knowledgeFiles.filter(item=>item.source==='user').length;
+}
+
+function openKnowledgeUpload(){
+  document.getElementById('knowledgeUploadMask').classList.remove('hidden');
+  document.getElementById('knowledgeUploadDrawer').classList.remove('hidden');
+  document.getElementById('userUploadCount').textContent=userUploadCount();
+}
+
+function closeKnowledgeUpload(){
+  document.getElementById('knowledgeUploadMask').classList.add('hidden');
+  document.getElementById('knowledgeUploadDrawer').classList.add('hidden');
+}
+
+function setKnowledgeUploadMode(mode){
+  knowledgeUploadMode=mode;
+  document.querySelectorAll('#knowledgeUploadDrawer .upload-option').forEach(el=>{
+    el.classList.toggle('active',el.textContent.includes(mode==='js'?'JS 链接':'离线文件'));
+  });
+  document.getElementById('knowledgeJsField').classList.toggle('hidden',mode!=='js');
+  document.getElementById('knowledgeFileField').classList.toggle('hidden',mode!=='file');
+}
+
+function handleKnowledgeFile(input){
+  const file=input.files && input.files[0];
+  if(!file)return;
+  const okType=/\.(xlsx|xls|pdf|txt|csv)$/i.test(file.name);
+  if(!okType){
+    alert('仅支持 Excel / PDF / TXT / CSV 文件。');
+    input.value='';
+    return;
+  }
+  if(file.size>50*1024*1024){
+    alert('文件大小不能超过 50M。');
+    input.value='';
+    return;
+  }
+  knowledgeUploadSelectedFile=file;
+  document.getElementById('knowledgeUploadFileText').textContent=`${file.name} · ${(file.size/1024/1024).toFixed(2)} MB`;
+}
+
+function saveKnowledgeUpload(){
+  const name=document.getElementById('knowledgeUploadName').value.trim();
+  if(!name){
+    alert('请填写知识名称。');
+    return;
+  }
+  if(userUploadCount()>=50){
+    alert('用户上传文件数量已达上限 50 个。');
+    return;
+  }
+  let fileType='',size='—',preview='';
+  if(knowledgeUploadMode==='js'){
+    const url=document.getElementById('knowledgeJsUrl').value.trim();
+    if(!url){alert('请填写 JS 链接。');return;}
+    fileType='JS 链接';
+    preview=url;
+  }else{
+    if(!knowledgeUploadSelectedFile){alert('请选择离线文件。');return;}
+    const ext=knowledgeUploadSelectedFile.name.split('.').pop().toLowerCase();
+    fileType={xlsx:'Excel',xls:'Excel',pdf:'PDF',txt:'TXT',csv:'CSV'}[ext]||ext.toUpperCase();
+    size=knowledgeUploadSelectedFile.size>1024*1024?`${(knowledgeUploadSelectedFile.size/1024/1024).toFixed(2)} MB`:`${Math.max(1,Math.round(knowledgeUploadSelectedFile.size/1024))} KB`;
+    preview=`/knowledge/file-preview.html?name=${encodeURIComponent(name)}`;
+  }
+  knowledgeFiles.unshift({
+    id:'upload-'+Date.now(),
+    name,
+    fileType,
+    source:'user',
+    sourceName:'用户上传',
+    owner:'张玥',
+    updatedAt:new Date().toISOString().slice(0,16).replace('T',' '),
+    size,
+    preview,
+    status:'待解析'
+  });
+  renderKnowledge();
+  closeKnowledgeUpload();
+  alert('上传信息已保存。原型内不触发真实文件上传。');
+}
+
+let previewMode=new URLSearchParams(location.search).get('preview')==='1';
+const IS_LOCAL = ['localhost','127.0.0.1'].includes(location.hostname) || location.protocol === 'file:';
+const APPLE_BASE = IS_LOCAL ? '../../changyu-projectspacenew-joyapp/public/index.html' : 'https://projectspacenew.joyapp.jd.com/project.html';
+
+// 侧边栏「新品项目」始终指向项目编辑页，避免误跳到迁移提示页。
+(function(){
+  const link=document.querySelector('nav a.nav-child[href="index.html"]');
+  if(link) link.setAttribute('href', APPLE_BASE);
+})();
+
+function goApple(path){
+  const href = IS_LOCAL ? APPLE_BASE : (APPLE_BASE + (path || ''));
+  if(/^https?:/.test(href)) window.open(href,'_blank');
+  else window.location.href = href;
+}
+
+if(previewMode){
+  document.getElementById('previewBanner')?.classList.remove('hidden');
+  document.querySelectorAll('nav .nav-child').forEach(item=>item.classList.remove('active'));
+  const activeNav=[...document.querySelectorAll('nav .nav-child')].find(item=>item.textContent.includes('项目列表'));
+  if(activeNav)activeNav.classList.add('active');
+}
+
+function exitPreview(){
+  if(document.referrer&&document.referrer.includes('templates.html'))history.back();
+  else window.location.href='templates.html';
+}
+
+function useTemplateFromPreview(){
+  window.location.href='templates.html?use=field';
+}
+let knowledgeSource='all';
+let knowledgeFiles=[
+  {
+    id:'dashboard-logic',
+    name:'价促场运营加工与判断逻辑.html',
+    fileType:'HTML',
+    source:'ai',
+    sourceName:'AI生成',
+    owner:'AI助手',
+    updatedAt:'2026-10-12 17:30',
+    size:'48 KB',
+    preview:'/knowledge/dashboard-logic.html',
+    autoSediment:true,
+    noDelete:true
+  },
+  {
+    id:'weekly-seckill-plan',
+    name:'本周秒杀报名计划_2026-09-24.xlsx',
+    fileType:'Excel',
+    source:'ai',
+    sourceName:'AI生成',
+    owner:'AI助手',
+    updatedAt:'2026-10-12 16:20',
+    size:'184 KB',
+    dataScope:'秒杀场域 · 全组 · TOP100'
+  },
+  {
+    id:'opportunity-detail',
+    name:'机会品明细_2026-09-24.xlsx',
+    fileType:'Excel',
+    source:'ai',
+    sourceName:'AI生成',
+    owner:'AI助手',
+    updatedAt:'2026-10-12 16:05',
+    size:'96 KB',
+    dataScope:'价促场运营 · 全组 · TOP5'
+  },
+  {
+    id:'seckill-anomaly',
+    name:'秒杀场域异动分析_2026-09-24.xlsx',
+    fileType:'Excel',
+    source:'ai',
+    sourceName:'AI生成',
+    owner:'AI助手',
+    updatedAt:'2026-10-12 15:40',
+    size:'122 KB',
+    dataScope:'秒杀场域 · 全组'
+  },
+  {
+    id:'marketing-sop',
+    name:'营销异常定位SOP.pdf',
+    fileType:'PDF',
+    source:'user',
+    sourceName:'用户上传',
+    owner:'张玥',
+    updatedAt:'2026-10-12 14:35',
+    size:'1.2 MB'
+  },
+  {
+    id:'portal-tip',
+    name:'提报首页下拉二楼小技巧.docx',
+    fileType:'Word',
+    source:'user',
+    sourceName:'用户上传',
+    owner:'张玥',
+    updatedAt:'2026-10-11 11:20',
+    size:'324 KB'
+  },
+  {
+    id:'bybt-fields',
+    name:'百亿补贴报名字段说明.xlsx',
+    fileType:'Excel',
+    source:'user',
+    sourceName:'用户上传',
+    owner:'郭旭文',
+    updatedAt:'2026-10-10 16:42',
+    size:'76 KB'
+  },
+  {
+    id:'metric-caliber',
+    name:'价促场运营指标口径.xlsx',
+    fileType:'Excel',
+    source:'user',
+    sourceName:'用户上传',
+    owner:'张玥',
+    updatedAt:'2026-10-09 10:18',
+    size:'64 KB'
+  }
+];
+
+function renderKnowledge(){
+  const tbody=document.getElementById('knowledgeFileList');
+  const query=document.getElementById('knowledgeSearch').value.trim().toLowerCase();
+  const rows=knowledgeFiles
+    .filter(item=>knowledgeSource==='all'||item.source===knowledgeSource)
+    .filter(item=>!query||item.name.toLowerCase().includes(query))
+    .slice()
+    .sort((a,b)=>b.updatedAt.localeCompare(a.updatedAt));
+
+  tbody.innerHTML='';
+  rows.forEach(item=>{
+    const tr=document.createElement('tr');
+    const previewUrl=item.preview||`/knowledge/file-preview.html?name=${encodeURIComponent(item.name)}&type=${encodeURIComponent(item.fileType)}&source=${encodeURIComponent(item.sourceName)}&updatedAt=${encodeURIComponent(item.updatedAt)}`;
+    const actions=[];
+    actions.push(`<button class="btn ghost small" onclick="openKnowledgePreview('${item.id}')">预览</button>`);
+    actions.push(`<button class="btn ghost small" onclick="staticAction('下载文件：${item.name}')">下载</button>`);
+    actions.push(`<button class="btn ghost small" onclick="referenceKnowledgeToChat('${item.id}')">引用到对话</button>`);
+    if(!item.noDelete) actions.push(`<button class="btn ghost small" onclick="deleteKnowledgeFile('${item.id}')">删除</button>`);
+    tr.innerHTML=`
+      <td>
+        <a class="file-name" href="${previewUrl}" target="_blank" rel="noopener">${item.name}</a>
+        ${item.autoSediment?'<div class="auto-pill">AI自动沉淀更新</div>':''}
+      </td>
+      <td>${item.fileType}</td>
+      <td>${item.sourceName}</td>
+      <td>${item.owner}</td>
+      <td>${item.updatedAt}</td>
+      <td>${item.size||'—'}</td>
+      <td><div class="row-actions">${actions.join('')}</div></td>`;
+    tbody.appendChild(tr);
+  });
+
+  if(!rows.length){
+    tbody.innerHTML='<tr><td colspan="7"><div class="file-empty">没有匹配的文件</div></td></tr>';
+  }
+  const count=document.getElementById('knowledgeFileCount');
+  if(count) count.textContent=`${knowledgeFiles.length} 个文件`;
+  const sideCount=document.getElementById('projectKnowledgeCount');
+  if(sideCount) sideCount.textContent=knowledgeFiles.length;
+}
+
+document.querySelectorAll('#knowledgeSourceFilter .filter-pill').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('#knowledgeSourceFilter .filter-pill').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    knowledgeSource=btn.dataset.source;
+    renderKnowledge();
+  };
+});
+
+function openKnowledgePreview(id){
+  const item=knowledgeFiles.find(x=>x.id===id);
+  if(!item)return;
+  const url=item.preview||`/knowledge/file-preview.html?name=${encodeURIComponent(item.name)}&type=${encodeURIComponent(item.fileType)}&source=${encodeURIComponent(item.sourceName)}&updatedAt=${encodeURIComponent(item.updatedAt)}`;
+  window.open(url,'_blank','noopener');
+}
+
+function deleteKnowledgeFile(id){
+  const item=knowledgeFiles.find(x=>x.id===id);
+  if(!item)return;
+  if(!confirm(`确认删除「${item.name}」？`))return;
+  knowledgeFiles=knowledgeFiles.filter(x=>x.id!==id);
+  renderKnowledge();
+}
+renderKnowledge();
+
+let skills=[
+  {name:'发送京ME提醒',category:'消息通知',risk:'中风险 · 需确认',desc:'向项目成员发送数据更新或异常提醒。',queries:['把今日看板更新提醒发送给项目成员','秒杀场域异常时提醒张玥','数据更新完成后发送京ME通知']},
+  {name:'创建任务',category:'任务管理',risk:'中风险 · 需确认',desc:'把待办或跟进事项创建为项目任务，支持指派人、优先级和截止日期。',queries:['创建任务：今天上午复核 5 个机会品报名状态','新增任务：明天 10 点输出本周报名计划','把高优机会品加入任务清单']},
+  {name:'报名秒杀',category:'报名执行',risk:'高风险 · 需确认',desc:'打开秒杀报名页并复制 SKU，辅助完成报名。',queries:['报名秒杀 SKU 100157038287','把 TOP3 机会品加入秒杀报名','查看今日秒杀报名入口']}
+];
+
+let activeChatSkill=null;
+const originalChatPlaceholder='点击推荐问题，或直接输入你的问题';
+
+function renderSkills(){
+  const list=document.getElementById('skillList');
+  list.innerHTML='';
+  skills.forEach(skill=>{
+    const div=document.createElement('div');
+    div.className='skill-card';
+    div.innerHTML=`
+      <h4>${skill.name}</h4>
+      <p>${skill.desc}</p>
+      <div style="display:flex;align-items:center;gap:6px;margin:10px 0">
+        <span class="badge">${skill.category}</span>
+      </div>
+      <div class="auto-actions">
+        <button class="btn ghost small">查看详情</button>
+        <button class="btn small">使用技能</button>
+      </div>`;
+    const [detailBtn,useBtn]=div.querySelectorAll('button');
+    detailBtn.onclick=()=>openSkillDetail(skill);
+    useBtn.onclick=()=>useSkill(skill);
+    list.appendChild(div);
+  });
+}
+
+function openSkillDetail(skill){
+  let mask=document.getElementById('skillDetailMask');
+  if(!mask){
+    mask=document.createElement('div');
+    mask.id='skillDetailMask';
+    mask.className='skill-detail-mask hidden';
+    mask.innerHTML=`
+      <div class="skill-detail">
+        <h3 id="skillDetailName"></h3>
+        <p id="skillDetailDesc"></p>
+        <div class="section-title">标签</div>
+        <div id="skillDetailTags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <div class="section-title">示例 Query</div>
+        <div id="skillDetailQueries" style="display:flex;flex-direction:column;gap:6px"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+          <button class="btn ghost" onclick="closeSkillDetail()">关闭</button>
+        </div>
+      </div>`;
+    document.body.appendChild(mask);
+  }
+  mask.querySelector('#skillDetailName').textContent=skill.name;
+  mask.querySelector('#skillDetailDesc').textContent=skill.desc;
+  mask.querySelector('#skillDetailTags').innerHTML=`<span class="badge">${skill.category}</span>`;
+  mask.querySelector('#skillDetailQueries').innerHTML=(skill.queries||[]).map(q=>`<div style="font-size:13px;color:#111827;background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px">${q}</div>`).join('');
+  mask.classList.remove('hidden');
+}
+
+function closeSkillDetail(){
+  document.getElementById('skillDetailMask')?.classList.add('hidden');
+}
+
+function updateChatPlaceholder(){
+  const empty=!document.getElementById('chatInput').value.trim();
+  const fake=document.getElementById('chatFakePlaceholder');
+  fake.classList.toggle('hidden',!empty);
+  document.getElementById('chatFakeText').textContent=activeChatSkill?'输入指令发起技能':originalChatPlaceholder;
+}
+
+
+function positionChatPlaceholder(fake){
+  const shell=document.querySelector('.chat-input-shell');
+  if(!shell){return}
+  const kn=document.getElementById('chatKnowledgeChip');
+  const sk=document.getElementById('chatSkillChip');
+  const chip=(kn&&kn.classList.contains('show')&&kn)||(sk&&sk.classList.contains('show')&&sk);
+  if(chip){
+    const cr=chip.getBoundingClientRect();
+    const sr=shell.getBoundingClientRect();
+    fake.style.left='12px';
+    fake.style.top=Math.round(cr.bottom-sr.top+8)+'px';
+  }else{
+    fake.style.left='12px';
+    fake.style.top='12px';
+  }
+}
+
+function setChatSkill(skill){
+  activeChatSkill=skill;
+  const chip=document.getElementById('chatSkillChip');
+  const input=document.getElementById('chatInput');
+  chip.innerHTML=`<span>🧩</span><span>${skill.name}</span><button type="button" title="移除技能" onclick="clearChatSkill()">×</button>`;
+  chip.classList.remove('hidden');
+  chip.classList.add('show');
+  const fake=document.getElementById('chatFakePlaceholder');
+  fake.classList.remove('hidden');
+  requestAnimationFrame(()=>positionChatPlaceholder(fake));
+  document.getElementById('chatFakeText').textContent='输入指令或者回车直接发送技能';
+  updateChatPlaceholder();
+  document.getElementById('starterQueries')?.classList.add('hidden');
+  input.focus();
+}
+
+function clearChatSkill(){
+  activeChatSkill=null;
+  const chip=document.getElementById('chatSkillChip');
+  chip.classList.remove('show');
+  chip.classList.add('hidden');
+  chip.innerHTML='';
+  const fake=document.getElementById('chatFakePlaceholder');
+  fake.style.left='12px';
+  fake.style.top='12px';
+  document.getElementById('chatFakeText').textContent=originalChatPlaceholder;
+  updateChatPlaceholder();
+}
+
+function useSkill(skill){
+  openChat();
+  setTimeout(()=>setChatSkill(skill),120);
+}
+
+let activeChatKnowledge=null;
+
+function referenceKnowledgeToChat(id){
+  const item=knowledgeFiles.find(x=>x.id===id);
+  if(!item)return;
+  openChat();
+  setTimeout(()=>setChatKnowledgeRef(item),120);
+}
+
+function setChatKnowledgeRef(item){
+  activeChatKnowledge=item;
+  const chip=document.getElementById('chatKnowledgeChip');
+  chip.querySelector('#chatKnowledgeChipName').textContent=item.name;
+  chip.classList.remove('hidden');
+  chip.classList.add('show');
+  const fake=document.getElementById('chatFakePlaceholder');
+  fake.classList.remove('hidden');
+  document.getElementById('chatFakeText').textContent='请输入问题，可shift+回车换行';
+  requestAnimationFrame(()=>positionChatPlaceholder(fake));
+  updateChatPlaceholder();
+  document.getElementById('chatInput').focus();
+}
+
+function clearChatKnowledgeRef(){
+  activeChatKnowledge=null;
+  const chip=document.getElementById('chatKnowledgeChip');
+  chip.classList.add('hidden');
+  chip.classList.remove('show');
+  const fake=document.getElementById('chatFakePlaceholder');
+  fake.style.left='12px';
+  fake.style.top='12px';
+  updateChatPlaceholder();
+}
+
+renderSkills();
+
+let chatAttachments=[];
+let chatSkillMenuFilter='';
+
+function toggleChatSkillMenu(){
+  document.getElementById('chatSkillMenu').classList.toggle('show');
+  if(document.getElementById('chatSkillMenu').classList.contains('show')) renderChatSkillMenu('');
+}
+
+function renderChatSkillMenu(filter=''){
+  const list=document.getElementById('chatSkillMenuList');
+  const q=(filter||'').trim().toLowerCase();
+  const rows=skills.filter(skill=>!q||skill.name.toLowerCase().includes(q)||skill.desc.toLowerCase().includes(q)||skill.category.toLowerCase().includes(q));
+  list.innerHTML=rows.map(skill=>`
+    <div class="chat-skill-option" onclick="setChatSkill(${JSON.stringify(skill).replace(/"/g,'&quot;')});toggleChatSkillMenu()">
+      <div class="name">${skill.name}</div>
+      <div class="desc">${skill.desc}</div>
+    </div>`).join('');
+  if(!rows.length) list.innerHTML='<div class="file-empty" style="padding:16px">没有匹配技能</div>';
+}
+
+function handleChatAttachments(input){
+  const files=Array.from(input.files||[]);
+  if(!files.length)return;
+  files.forEach(file=>{
+    if(file.size>20*1024*1024){
+      alert(`附件 ${file.name} 超过 20M，未添加。`);
+      return;
+    }
+    if(chatAttachments.some(x=>x.name===file.name&&x.size===file.size))return;
+    chatAttachments.push({name:file.name,size:file.size,type:file.type||'文件'});
+  });
+  input.value='';
+  renderChatAttachments();
+  updateChatPlaceholder();
+}
+
+function renderChatAttachments(){
+  const row=document.getElementById('chatAttachmentRow');
+  row.innerHTML=chatAttachments.map((file,index)=>`
+    <span class="chat-attachment-chip" title="${file.name}">
+      <span>📎 ${file.name}</span>
+      <button onclick="removeChatAttachment(${index})">×</button>
+    </span>`).join('');
+  row.style.display=chatAttachments.length?'flex':'none';
+}
+
+function removeChatAttachment(index){
+  chatAttachments.splice(index,1);
+  renderChatAttachments();
+  updateChatPlaceholder();
+}
+
+let appToastTimer=null;
+function showToast(message){
+  const toast=document.getElementById('appToast');
+  if(!toast)return;
+  toast.textContent=message;
+  toast.classList.remove('hidden');
+  // 强制一帧后加 show，保证从 hidden 复位时过渡能触发
+  requestAnimationFrame(()=>toast.classList.add('show'));
+  clearTimeout(appToastTimer);
+  appToastTimer=setTimeout(()=>{toast.classList.remove('show');setTimeout(()=>toast.classList.add('hidden'),220);},5200);
+}
+
+let historyType='all';
+let historyRange='all';
+let historyOperator='all';
+let historyItems=[
+  {
+    id:'history_initial',
+    date:'2026-10-12', time:'09:00',
+    type:'初始配置-使用说明',
+    title:'完成价促场运营看板初始化',
+    summary:'初始化超级补贴、秒杀、便宜包邮三大场域的指标视图、默认筛选和使用说明。',
+    operator:'张玥',
+    related:[{label:'查看看板',action:'dashboard'}],
+    rollback_status:'不可回滚'
+  },
+  {
+    id:'history_metric',
+    date:'2026-10-12', time:'14:20',
+    type:'指标口径变化',
+    title:'调整成交父单量口径',
+    summary:'价促场运营看板的成交父单量改为按下单日期统计，同比口径保持 T-1 对 T-2。',
+    operator:'张玥',
+    related:[{label:'查看看板',action:'dashboard'}],
+    rollback_status:'可回滚'
+  },
+  {
+    id:'history_processing',
+    date:'2026-10-12', time:'15:10',
+    type:'加工逻辑变化',
+    title:'优化快照去重逻辑',
+    summary:'超级补贴和秒杀场域内同一商品按最新快照去重，避免重复计算。',
+    operator:'AI助手',
+    related:[{label:'查看知识',action:'knowledge'}],
+    rollback_status:'可回滚'
+  },
+  {
+    id:'history_rule',
+    date:'2026-10-12', time:'16:00',
+    type:'判断规则变化',
+    title:'调整秒杀爆发系数阈值',
+    summary:'秒杀场域质量分级中爆发系数优质阈值从 2.0 调整为 1.8，低质判断仍小于 1.2。',
+    operator:'张玥',
+    related:[{label:'查看知识',action:'knowledge'}],
+    rollback_status:'可回滚'
+  },
+  {
+    id:'history_source',
+    date:'2026-10-12', time:'17:20',
+    type:'数据源 / 字段变化',
+    title:'新增商详 UV 字段',
+    summary:'黄金眼商品明细数据源新增商详 UV 字段，用于秒杀场域流量分析。',
+    operator:'AI助手',
+    related:[{label:'查看看板',action:'dashboard'}],
+    rollback_status:'不可回滚'
+  },
+  {
+    id:'history_dashboard',
+    date:'2026-10-13', time:'09:20',
+    type:'看板配置变化',
+    title:'调整机会品默认排序',
+    summary:'价促场运营看板机会品列表默认按成交金额从高到低排序。',
+    operator:'AI助手',
+    related:[{label:'查看看板',action:'dashboard'}],
+    rollback_status:'可回滚'
+  },
+  {
+    id:'history_repair',
+    date:'2026-10-13', time:'10:30',
+    type:'重要修复或回填',
+    title:'回填 10 月 11 日秒杀数据',
+    summary:'修复采集中断导致秒杀场域快照缺失，回填 10 月 11 日数据。',
+    operator:'AI助手',
+    related:[{label:'查看看板',action:'dashboard'}],
+    rollback_status:'不可回滚'
+  }
+];
+
+function historyRangeDays(range){
+  if(range==='today')return 0;
+  if(range==='7d')return 7;
+  return 9999;
+}
+
+function renderActivity(){
+  const list=document.getElementById('activityList');
+  list.innerHTML='';
+  const today=HISTORY_TODAY;
+  const days=historyRangeDays(historyRange);
+  const rows=historyItems.filter(item=>{
+    if(historyType!=='all'&&item.type!==historyType)return false;
+    if(historyOperator!=='all'&&item.operator!==historyOperator)return false;
+    if(days===0)return item.date===today;
+    if(days===9999)return true;
+    const diff=(new Date(today)-new Date(item.date))/86400000;
+    return diff>=0&&diff<=days;
+  });
+
+  rows.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='activity-item';
+    const related=item.related.map(r=>{
+      if(r.action==='dashboard')return `<button class="btn ghost small" onclick="openTab('dashboard')">${r.label}</button>`;
+      if(r.action==='knowledge')return `<button class="btn ghost small" onclick="openTab('knowledge')">${r.label}</button>`;
+      if(r.action==='tasks')return `<button class="btn ghost small" onclick="openTab('tasks')">${r.label}</button>`;
+      return '';
+    }).join('');
+    let rollbackButton='';
+    if(item.rollback_status==='可回滚'){
+      rollbackButton=`<button class="btn ghost small" onclick="requestHistoryRollback('${item.id}')">回滚</button>`;
+    }else if(item.rollback_status==='已回滚'){
+      rollbackButton='<button class="btn ghost small" disabled>已回滚</button>';
+    }
+    div.innerHTML=`
+      <div class="activity-icon info">🕓</div>
+      <div style="min-width:0">
+        <div class="activity-title">${item.title}</div>
+        <div class="activity-desc">${item.summary}</div>
+        <div class="history-fields">
+          <b>类型</b><span>${item.type}</span>
+          <b>操作人</b><span>${item.operator}</span>
+        </div>
+        <div class="activity-meta"><span>${item.date} ${item.time}</span></div>
+        <div class="activity-actions">${related}${rollbackButton}</div>
+      </div>`;
+    list.appendChild(div);
+  });
+
+  if(!rows.length){
+    list.innerHTML='<div class="card"><p>当前筛选条件下暂无历史动态。</p></div>';
+  }
+}
+
+let rollbackTargetId=null;
+
+function requestHistoryRollback(id){
+  const item=historyItems.find(x=>x.id===id);
+  if(!item||item.rollback_status!=='可回滚')return;
+  rollbackTargetId=id;
+  document.getElementById('rollbackConfirmTitle').textContent=`回滚「${item.title}」？`;
+  document.getElementById('rollbackConfirmDesc').textContent='回滚会将看板恢复到该时点，可能覆盖当前指标口径、判断规则或配置。该操作会记录到项目动态。';
+  document.getElementById('rollbackConfirmMeta').textContent=`${item.date} ${item.time} · 操作人 ${item.operator}`;
+  document.getElementById('rollbackConfirmMask').classList.remove('hidden');
+}
+
+function closeRollbackConfirm(){
+  rollbackTargetId=null;
+  document.getElementById('rollbackConfirmMask').classList.add('hidden');
+}
+
+function confirmHistoryRollback(){
+  const item=historyItems.find(x=>x.id===rollbackTargetId);
+  closeRollbackConfirm();
+  if(!item)return;
+  showToast('已发起回滚，正在引用历史动态...');
+  openChat();
+  addMsg(`<div class="history-quote"><b>引用历史动态</b>${item.title}<br>${item.date} ${item.time}</div><div>回滚</div>`,'user');
+  setTimeout(()=>{
+    item.rollback_status='已回滚';
+    renderActivity();
+    addMsg(`✅ 已将「${item.title}」标记为已回滚。`);
+  },400);
+}
+
+document.querySelectorAll('#historyTypeFilter .filter-pill').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('#historyTypeFilter .filter-pill').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    historyType=btn.dataset.type;
+    renderActivity();
+  };
+});
+
+document.querySelectorAll('#historyTimeFilter .filter-pill').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('#historyTimeFilter .filter-pill').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    historyRange=btn.dataset.range;
+    renderActivity();
+  };
+});
+
+document.querySelectorAll('#historyOperatorFilter .filter-pill').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('#historyOperatorFilter .filter-pill').forEach(x=>x.classList.remove('active'));
+    btn.classList.add('active');
+    historyOperator=btn.dataset.operator;
+    renderActivity();
+  };
+});
+renderActivity();
+
+const taskLogs={
+  'daily-update':{
+    title:'每天早上 9 点更新数据', status:'已结束', trigger:'定时任务 · 每天 09:00',
+    start:'2026-09-23 09:00:02', end:'2026-09-23 09:04:18', duration:'4 分 16 秒',
+    dataDate:'2026-09-22', output:'最新看板数据',
+    logs:[
+      {time:'09:00:02',type:'ok',text:'开始执行每日数据更新'},
+      {time:'09:00:03',type:'ok',text:'检查浏览器 Bridge 连接'},
+      {time:'09:00:04',type:'ok',text:'登录态有效'},
+      {time:'09:00:06',type:'ok',text:'开始拉取黄金眼数据'},
+      {time:'09:01:32',type:'ok',text:'超级补贴数据拉取完成'},
+      {time:'09:02:10',type:'ok',text:'秒杀场域数据拉取完成'},
+      {time:'09:02:48',type:'ok',text:'便宜包邮场域数据拉取完成'},
+      {time:'09:03:20',type:'ok',text:'CPS 数据拉取完成'},
+      {time:'09:03:54',type:'ok',text:'看板快照生成完成'},
+      {time:'09:04:10',type:'ok',text:'京ME 提醒已触发'},
+      {time:'09:04:18',type:'ok',text:'任务执行完成'}
+    ]
+  },
+  'notify-after-update':{
+    title:'数据更新后发送京ME提醒', status:'已结束', trigger:'数据更新完成后',
+    start:'2026-09-23 09:04:10', end:'2026-09-23 09:04:13', duration:'3 秒',
+    dataDate:'2026-09-22', output:'京ME提醒已发送',
+    logs:[
+      {time:'09:04:10',type:'ok',text:'准备提醒内容'},
+      {time:'09:04:11',type:'ok',text:'读取项目成员接收人'},
+      {time:'09:04:12',type:'ok',text:'发送京ME消息'},
+      {time:'09:04:13',type:'ok',text:'任务执行完成'}
+    ]
+  },
+  'analyze-seckill-anomaly':{
+    title:'分析秒杀场域异动', status:'已结束', trigger:'用户提问触发',
+    start:'2026-09-23 10:11:40', end:'2026-09-23 10:12:08', duration:'28 秒',
+    dataDate:'2026-09-22', output:'异动分析结论',
+    logs:[
+      {time:'10:11:40',type:'ok',text:'读取秒杀场域快照'},
+      {time:'10:11:45',type:'ok',text:'对比在线商品数、下线商品数和成交件数'},
+      {time:'10:12:00',type:'warn',text:'发现下线商品增幅异常'},
+      {time:'10:12:08',type:'ok',text:'生成异动分析结论'}
+    ]
+  },
+  'signup-seckill-sku':{
+    title:'报名秒杀 SKU 100157038287', status:'待确认', trigger:'用户确认后执行',
+    start:'—', end:'—', duration:'—',
+    dataDate:'2026-09-22', output:'报名页链接已准备好',
+    logs:[
+      {time:'10:20:00',type:'info',text:'AI 已准备报名页链接'},
+      {time:'10:20:01',type:'warn',text:'等待运营确认后才能执行'}
+    ]
+  }
+};
+
+const chatHistory=document.getElementById('chatMessages');
+const appShell=document.querySelector('.app');
+let projectAsideCollapsedBeforeChat=null;
+
+function addMsg(text, role='ai'){
+  const div=document.createElement('div');
+  div.className='msg '+role;
+  div.innerHTML=role==='ai'?`<b>AI 助手</b>${text}`:text;
+  chatHistory.appendChild(div);
+  chatHistory.scrollTop=chatHistory.scrollHeight;
+  return div;
+}
+
+function addFollowups(items){
+  if(!items || !items.length) return;
+  const wrap=document.createElement('div');
+  wrap.className='followup';
+  wrap.innerHTML=`<div class="followup-title">你可以继续追问</div><div class="followup-list"></div>`;
+  const list=wrap.querySelector('.followup-list');
+  items.forEach(item=>{
+    const btn=document.createElement('button');
+    btn.className='followup-chip';
+    btn.textContent=item;
+    btn.onclick=()=>sendChat(item);
+    list.appendChild(btn);
+  });
+  chatHistory.appendChild(wrap);
+  chatHistory.scrollTop=chatHistory.scrollHeight;
+}
+
+function renderStarterQueries(){
+  const starter=document.getElementById('starterQueries');
+  if(!starter)return;
+  starter.classList.toggle('hidden', !!chatHistory.querySelector('.msg.user'));
+}
+
+function openChat(text){
+  const wasChatOpen=appShell.classList.contains('chat-open');
+  if(!wasChatOpen){
+    projectAsideCollapsedBeforeChat=appShell.classList.contains('project-collapsed');
+  }
+  appShell.classList.add('chat-open');
+  applyProjectAsideCollapsed(true);
+  document.getElementById('conversation').classList.remove('hidden');
+  document.getElementById('aiAssistant').classList.add('hidden');
+  document.getElementById('aiLauncher').classList.add('hidden');
+  if(text){
+    setTimeout(()=>sendChat(text),80);
+  }else{
+    renderStarterQueries();
+    setTimeout(()=>document.getElementById('chatInput').focus(),80);
+  }
+}
+
+function closeChat(){
+  appShell.classList.remove('chat-open');
+  applyProjectAsideCollapsed(projectAsideCollapsedBeforeChat===true);
+  projectAsideCollapsedBeforeChat=null;
+  document.getElementById('conversation').classList.add('hidden');
+  document.getElementById('aiAssistant').classList.remove('hidden');
+}
+
+function collapseAssistantToBubble(){
+  document.getElementById('aiAssistant').classList.add('hidden');
+  document.getElementById('aiLauncher').classList.remove('hidden');
+}
+
+function expandAssistant(){
+  document.getElementById('aiAssistant').classList.remove('hidden');
+  document.getElementById('aiLauncher').classList.add('hidden');
+}
+
+function closeAssistant(){
+  collapseAssistantToBubble();
+}
+
+function openAssistant(){
+  expandAssistant();
+}
+
+document.addEventListener('click',e=>{
+  if(appShell.classList.contains('chat-open'))return;
+  const assistant=document.getElementById('aiAssistant');
+  const launcher=document.getElementById('aiLauncher');
+  if(assistant.classList.contains('hidden'))return;
+  if(e.target.closest('#aiAssistant')||e.target.closest('#aiLauncher'))return;
+  collapseAssistantToBubble();
+});
+
+function answerFor(text){
+  if(text.includes('报名入口')){
+    return '当前 5 个高成交机会品统一走【超级补贴报名入口】：<br><br>报名页：超补资源位报名列表<br>操作方式：打开报名页后，点「选择报名商品」并粘贴对应 SKU。<br><br>SKU 对应关系：<br>1. 100157038287 · 拜灭士蚂蚁药饵盒<br>2. 100108145716 · 巴斯夫除虫菊杀虫剂喷雾 80ml<br>3. 100004726841 · 超威杀虫剂喷雾 500ml*2<br>4. 4423690 · 雷达杀虫剂喷雾 550ml*2<br>5. 100045794408 · 森林地带驱蚊液 100ml<br><br>这些 SKU 也可以在机会品卡片中点击「报超补」，系统会自动复制 SKU 并打开同一报名页。';
+  }
+  if(text.includes('机会品')){
+    return '已读取当前看板快照并筛出 <b>7 个高成交但未上价促场</b> 的机会品，按成交金额从高到低排序：<br><br>1. 拜灭士蚂蚁药饵盒 · ¥35,540<br>2. 巴斯夫除虫菊杀虫剂喷雾 80ml · ¥27,458<br>3. 超威杀虫剂喷雾 500ml*2 · ¥25,958<br>4. 雷达杀虫剂喷雾 550ml*2 · ¥24,758<br>5. 森林地带驱蚊液 100ml · ¥20,826<br><br>建议优先处理前 3 个 SKU。';
+  }
+  if(text.includes('创建提示') && text.includes('早上9点')){
+    return '已解析为定时提醒：<b>每天早上 09:00</b>，在“场域数据看板”完成数据刷新后提醒你。点击【确认创建】后会写入【自动化任务】，后续可在列表中编辑或暂停。';
+  }
+  if(text.includes('调整看板') && text.includes('短标题')){
+    return '已收到看板调整请求：将商品列表从完整标题改为短标题。应用后，当前商品列表会更改展示口径；如果需要保留完整标题，可在后续补充恢复规则。';
+  }
+  if(text.includes('爆发PUSH')){
+    return '已收到【爆发PUSH】配置完成信号。后续我会：1) 刷新看板数据；2) 更新任务清单状态；3) 触发京ME提醒。涉及执行动作前仍会请求确认。';
+  }
+  return '已收到你的问题。我会结合当前看板快照、项目知识库和指标口径进行分析；如果涉及报名或更新数据，会先给出建议并请求确认。';
+}
+
+function followupsFor(text){
+  if(text.includes('报名入口')){
+    return ['复制超补报名页地址', '按报名优先级排序机会品', '输出 5 个机会品的完整 SKU', '把前 3 个机会品加入任务清单'];
+  }
+  if(text.includes('创建提示') && text.includes('早上9点')){
+    return ['确认创建定时提醒', '修改提醒时间', '查看任务列表', '取消创建'];
+  }
+  if(text.includes('调整看板') && text.includes('短标题')){
+    return ['确认修改范围', '调整为短标题', '恢复为完整标题', '查看调整结果'];
+  }
+  if(text.includes('爆发PUSH')){
+    return ['确认看板是否刷新成功', '生成更新日报', '发送京ME提醒', '更新任务清单状态'];
+  }
+  return ['解释当前指标口径', '查看相关商品明细', '生成分析结论', '创建跟进任务'];
+}
+
+function isTaskCreationQuery(text){
+  return /(加入任务清单|加入清单|创建任务|新增任务|建个任务|添加任务|安排任务|创建定时任务|提醒我|跟进.*任务|报名.*(sku|秒杀|百亿补贴)|处理报名)/i.test(text);
+}
+
+function isDashboardAdjustQuery(text){
+  return /调整看板|修改看板|短标题/.test(text);
+}
+
+function answerForDashboardAdjust(text){
+  return '已收到看板调整请求：将商品列表从完整标题改为短标题。请确认修改范围：是否仅调整当前场域数据看板？';
+}
+
+function isHighRiskInfo(info){
+  const text=`${info.name||info.title||''} ${info.content||info.desc||''}`.toLowerCase();
+  return /报名|改价|发消息|发送消息|京me|爆发push|上线|下线/.test(text);
+}
+
+function appendTaskDraftCard(info,originQuery){
+  const high=isHighRiskInfo(info);
+  const kindText=info.type==='automation'?'定时任务':'一次性任务';
+  const timeText=info.type==='automation'?`${info.frequency} ${info.executionTime}`:info.dueDate;
+  const card=document.createElement('div');
+  card.className='chat-task-card';
+  card.innerHTML=`
+    <div class="chat-task-head">
+      <div class="chat-task-title">${info.name}</div>
+      <span class="badge ${high?'warn':'user'}">${high?'高风险':'普通任务'}</span>
+    </div>
+    <div class="chat-task-grid">
+      <b>类型</b><span>${kindText}</span>
+      <b>状态</b><span>${info.status}</span>
+      <b>开始日期</b><span>${info.startDate}</span>
+      <b>结束日期</b><span>${info.dueDate}</span>
+      ${info.type==='automation'?`<b>任务内容</b><span>${info.content}</span><b>执行频率</b><span>${info.frequency}</span><b>下一次执行时间</b><span>${info.executionTime}</span>`:''}
+    </div>
+    <div class="chat-task-risk" style="display:none">
+      <div class="chat-task-risk-title">⚠️ 高风险任务需要二次确认</div>
+      <p>该任务涉及报名、改价、发送消息或影响线上资源。请确认对象、影响范围和执行方式。</p>
+      <label class="chat-task-check">
+        <input type="checkbox" class="chat-risk-check">
+        <span>我已确认任务对象、影响范围和执行方式。</span>
+      </label>
+      <div class="chat-task-actions">
+        <button class="btn chat-risk-confirm" disabled>我已确认，创建任务</button>
+      </div>
+    </div>
+    <div class="chat-task-actions main-actions">
+      <button class="btn chat-confirm">${high?'继续确认':'确认创建'}</button>
+      <button class="btn ghost chat-edit">修改字段</button>
+      <button class="btn ghost chat-cancel">取消</button>
+    </div>`;
+  const mainActions=card.querySelector('.main-actions');
+  const riskBox=card.querySelector('.chat-task-risk');
+  const confirmBtn=card.querySelector('.chat-confirm');
+  const editBtn=card.querySelector('.chat-edit');
+  const cancelBtn=card.querySelector('.chat-cancel');
+
+  if(high){
+    confirmBtn.onclick=()=>{
+      mainActions.style.display='none';
+      riskBox.style.display='block';
+      const check=card.querySelector('.chat-risk-check');
+      const finalBtn=card.querySelector('.chat-risk-confirm');
+      check.onchange=()=>finalBtn.disabled=!check.checked;
+      finalBtn.onclick=()=>createTaskFromChat(info,card);
+    };
+  }else{
+    confirmBtn.onclick=()=>createTaskFromChat(info,card);
+  }
+
+  editBtn.onclick=()=>openTaskEditor(info.type,null,'对话创建',info);
+  cancelBtn.onclick=()=>{
+    card.classList.add('cancelled');
+    mainActions.innerHTML='<span class="chat-task-note" style="color:#6b7280">已取消，任务未入库。</span>';
+    if(riskBox)riskBox.style.display='none';
+  };
+
+  chatHistory.appendChild(card);
+  chatHistory.scrollTop=chatHistory.scrollHeight;
+  return card;
+}
+
+function createTaskFromChat(info,card){
+  const high=isHighRiskInfo(info);
+  const item={
+    id:(info.type==='automation'?'auto-':'task-')+Date.now(),
+    type:info.type,
+    name:info.name,
+    status:info.status||'待开始',
+    startDate:info.startDate,
+    dueDate:info.dueDate,
+    createdAt:nowDateTime(),
+    updatedAt:nowDateTime(),
+    source:'对话创建'
+  };
+  if(info.type==='automation'){
+    item.content=info.content;
+    item.frequency=info.frequency;
+    item.executionTime=info.executionTime;
+    item.records=[];
+  }
+  tasks.unshift(item);
+  renderTasks();
+  setTaskView(info.type);
+  card.classList.add('confirmed');
+  card.querySelector('.chat-task-head').innerHTML=`
+    <div class="chat-task-title">${item.name}</div>
+    <span class="badge ok">${item.status}</span>`;
+  const actions=card.querySelector('.chat-task-actions');
+  if(actions)actions.remove();
+  const riskBox=card.querySelector('.chat-task-risk');
+  if(riskBox)riskBox.remove();
+  const note=document.createElement('div');
+  note.className='chat-task-note';
+  note.innerHTML=`✅ 任务已入库。 <button class="btn ghost small" onclick="openTab('tasks')">查看任务</button>`;
+  card.appendChild(note);
+  chatHistory.scrollTop=chatHistory.scrollHeight;
+}
+
+function appendTaskDraftCardForQuery(query){
+  const info=aiParseTask(query);
+  if(!info)return;
+  info.originQuery=query;
+  setTimeout(()=>{
+    addMsg('已解析为任务草稿。请确认字段；确认后才会写入【自动化任务】。');
+    setTimeout(()=>appendTaskDraftCard(info,query),100);
+  },300);
+}
+
+function openDashboardScopeConfirm(query){
+  pendingDashboardScope=query;
+  const card=document.createElement('div');
+  card.className='chat-scope-card';
+  card.innerHTML=`
+    <div class="chat-scope-title">确认看板调整范围</div>
+    <div class="chat-scope-grid">
+      <b>调整内容</b><span>商品列表展示短标题</span>
+      <b>建议范围</b><span>当前场域数据看板</span>
+      <b>影响说明</b><span>仅影响当前看板展示，不影响任务、知识库或权限</span>
+    </div>
+    <div class="chat-scope-actions">
+      <button class="btn primary" onclick="applyDashboardAdjustment()">确认调整</button>
+      <button class="btn ghost" onclick="sendChat('调整为短标题')">先询问调整建议</button>
+      <button class="btn ghost" onclick="cancelDashboardAdjustment()">取消</button>
+    </div>`;
+  chatHistory.appendChild(card);
+  chatHistory.scrollTop=chatHistory.scrollHeight;
+}
+
+function cancelDashboardAdjustment(){
+  pendingDashboardScope=null;
+  addMsg('已取消，看板保持不变。');
+}
+
+function applyDashboardAdjustment(){
+  if(!pendingDashboardScope)return;
+  const query=pendingDashboardScope;
+  pendingDashboardScope=null;
+  addMsg('✅ 已确认范围：当前场域数据看板。正在调整为短标题展示。');
+  addActivityItem({
+    id:'activity-'+Date.now(),
+    date:HISTORY_TODAY,
+    time:HISTORY_NOW,
+    type:'看板调整',
+    title:'商品列表调整为短标题',
+    summary:'将商品列表从完整标题切换为短标题展示，便于快速扫读。',
+    impact:['看板：场域数据看板','模块：商品列表'],
+    operator:'AI助手',
+    related:[{label:'查看看板',action:'dashboard'}],
+    rollback_status:'可回滚'
+  });
+  const frame=document.getElementById('dashboardFrame');
+  if(frame){
+    frame.src='dashboard-snapshot.html';
+  }
+  setTimeout(()=>addMsg('已完成调整，并同步更新项目动态。'),300);
+}
+
+function addActivityItem(item){
+  historyItems.unshift(item);
+  renderActivity();
+}
+
+
+function sendChat(text){
+  const input=document.getElementById('chatInput');
+  let value=typeof text==='string'?text:input.value.trim();
+  if(!value)return;
+  if(activeChatSkill)value=`请使用技能【${activeChatSkill.name}】：${value}`;
+  if(activeChatKnowledge)value=`请结合知识文件【${activeChatKnowledge.name}】：${value}`;
+  document.getElementById('starterQueries')?.classList.add('hidden');
+  const attachmentNote=chatAttachments.length?`<br><span style="color:#6b7280;font-size:12px">📎 附件：${chatAttachments.map(x=>x.name).join('、')}</span>`:'';
+  const knowledgeNote=activeChatKnowledge?`<br><span style="color:#6b7280;font-size:12px">📄 知识文件：${activeChatKnowledge.name}</span>`:'';
+  addMsg(value+attachmentNote+knowledgeNote,'user');
+  input.value='';
+  chatAttachments=[];
+  renderChatAttachments();
+  clearChatKnowledgeRef();
+  clearChatSkill();
+  if(isTaskCreationQuery(value)){
+    const info=aiParseTask(value);
+    info.originQuery=value;
+    setTimeout(()=>{
+      addMsg('已解析为任务草稿。请确认字段；确认后才会写入【自动化任务】。');
+      setTimeout(()=>appendTaskDraftCard(info,value),100);
+    },300);
+    return;
+  }
+  if(value==='确认创建'){
+    appendTaskDraftCardForQuery('每天早上9点更新完数据提醒我');
+    return;
+  }
+  if(isDashboardAdjustQuery(value)){
+    setTimeout(()=>{
+      addMsg(answerForDashboardAdjust(value));
+      setTimeout(()=>openDashboardScopeConfirm(value),120);
+    },300);
+    return;
+  }
+  setTimeout(()=>{
+    addMsg(answerFor(value));
+    setTimeout(()=>addFollowups(followupsFor(value)),120);
+  },400);
+}
+
+document.getElementById('chatInput').addEventListener('input',updateChatPlaceholder);
+document.getElementById('chatInput').addEventListener('input',updateChatPlaceholder);
+document.getElementById('chatInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){
+    e.preventDefault();
+    sendChat();
+  }
+});
+document.getElementById('chatSkillSearch').addEventListener('input',e=>{
+  renderChatSkillMenu(e.target.value);
+});
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#chatSkillMenu')&&!e.target.closest('.chat-tool-btn')) document.getElementById('chatSkillMenu').classList.remove('show');
+});</script>
+</body>
+</html>
+
+.pl-card-progress-text,.empty-state,.count,.badge-num,.howto-meta{font-variant-numeric:tabular-nums}
+.section-head span,.howto-meta,.breadcrumb{text-wrap:pretty}
+.page-title,.section-head h2,.sample-title{text-wrap:balance}
